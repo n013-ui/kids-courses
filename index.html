@@ -575,8 +575,21 @@ function scheduleCloudSave() {
   _saveTimer = setTimeout(function() {
     if (!currentUser) return;
     const w       = getWatched();
-    const watched = Object.keys(w).filter(k => w[k]).join(',');
-    callGAS({ action: 'saveProgress', user: currentUser, watched }, function() {});
+    // 按課程鍵分組，讓試算表每列只存一門課
+    const grouped = {};
+    for (const [courseKey, courseData] of Object.entries(COURSES)) {
+      const ids = courseData.chapters
+        .flatMap(c => c.videos)
+        .filter(v => w[v.id])
+        .map(v => v.id)
+        .join(',');
+      grouped[courseKey] = ids; // 沒看的也存空字串，保持紀錄
+    }
+    callGAS({
+      action: 'saveProgress',
+      user: currentUser,
+      data: JSON.stringify(grouped)
+    }, function() {});
   }, 2500);
 }
 
