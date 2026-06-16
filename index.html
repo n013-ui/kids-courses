@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>線上課程學習平台</title>
+<script src="config.js"></script>
 <!--
   ════════════════════════════════════════════
   【使用說明】
-  1. 密碼：請搜尋 const PASSWORD 那行，改成你要的密碼
+  1. 密碼：在 GAS 專案設定 → 指令碼屬性 → SITE_PW 修改（不需動這個檔案）
   2. 新增課程：在 const COURSES 區塊新增對應的 key
      格式：'G{年級}|{科目}|{上/下}'
      例如：'G8|數學|上'  → 國二數學上學期
@@ -272,7 +273,7 @@ header h1 { font-size: 18px; font-weight: 800; }
     <input class="login-input" type="password" id="pw"
            placeholder="輸入密碼…"
            onkeydown="if(event.key==='Enter')login()">
-    <button class="login-btn" onclick="login()">進入課程 →</button>
+    <button class="login-btn" id="login-btn" onclick="login()">進入課程 →</button>
     <p class="login-error" id="login-error">❌ 密碼錯誤，請再試一次</p>
   </div>
 </div>
@@ -298,10 +299,7 @@ header h1 { font-size: 18px; font-weight: 800; }
 </div>
 
 <script>
-// ════════════════════════════════════════════
-//  ★ 請修改這裡的密碼 ★
-// ════════════════════════════════════════════
-const PASSWORD = 'sc1234';
+// 密碼儲存在 GAS 指令碼屬性（SITE_PW），不在這裡
 
 // ── 科目外觀設定 ─────────────────────────────
 const SUB_CFG = {
@@ -484,17 +482,66 @@ let openSem       = null;
 
 // ── AUTH ─────────────────────────────────────
 function login() {
-  if (document.getElementById('pw').value === PASSWORD) {
-    sessionStorage.setItem(SESS_KEY, '1');
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    initApp();
-  } else {
-    document.getElementById('login-error').style.display = 'block';
-    document.getElementById('pw').value = '';
-    document.getElementById('pw').focus();
+  const pw  = document.getElementById('pw').value.trim();
+  const btn = document.getElementById('login-btn');
+  const err = document.getElementById('login-error');
+  if (!pw) return;
+
+  // 檢查 config.js 是否已設定
+  if (!GAS_URL || GAS_URL.includes('YOUR_DEPLOYMENT_ID')) {
+    err.textContent = '⚠️ 請先設定 config.js 的 GAS 網址';
+    err.style.display = 'block';
+    return;
   }
+
+  btn.textContent = '驗證中…'; btn.disabled = true;
+  err.style.display = 'none';
+
+  // 用 JSONP 呼叫 GAS（避免跨網域問題）
+  const cbName = '_cb' + Date.now();
+  const timer  = setTimeout(() => {
+    cleanup();
+    showLoginError('⚠️ 連線逾時，請稍後再試');
+  }, 12000);
+
+  function cleanup() {
+    clearTimeout(timer);
+    delete window[cbName];
+    const s = document.getElementById('_gas_script');
+    if (s) s.remove();
+    btn.textContent = '進入課程 →'; btn.disabled = false;
+  }
+
+  window[cbName] = function(data) {
+    cleanup();
+    if (data && data.ok) {
+      sessionStorage.setItem(SESS_KEY, '1');
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      initApp();
+    } else {
+      showLoginError('❌ 密碼錯誤，請再試一次');
+      document.getElementById('pw').value = '';
+      document.getElementById('pw').focus();
+    }
+  };
+
+  const script  = document.createElement('script');
+  script.id     = '_gas_script';
+  script.onerror = function() {
+    cleanup();
+    showLoginError('⚠️ 連線失敗，請確認網路或 GAS 網址是否正確');
+  };
+  script.src = GAS_URL + '?action=checkPw&pw=' + encodeURIComponent(pw) + '&cb=' + cbName;
+  document.head.appendChild(script);
 }
+
+function showLoginError(msg) {
+  const err = document.getElementById('login-error');
+  err.textContent  = msg;
+  err.style.display = 'block';
+}
+
 function logout() {
   sessionStorage.removeItem(SESS_KEY);
   location.reload();
