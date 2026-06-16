@@ -355,6 +355,7 @@ const COURSES = {
 
   // ── 國二 理化 上學期（川楓老師 B3） ──────────
   'G8|理化|上': {
+    teacher: '劉川楓老師',
     bonus: [
       { label:'升國二暑假先修安排',     url:'https://youtu.be/-0Xcv3FYn_A' },
       { label:'升國三自然科準備策略',   url:'https://youtu.be/3EdVsI4M6HE' },
@@ -411,6 +412,7 @@ const COURSES = {
 
   // ── 國二 理化 下學期（川楓老師 B4） ──────────
   'G8|理化|下': {
+    teacher: '劉川楓老師',
     chapters: [
       { id:'B4C1', title:'第一章：化學反應與計量', videos:[
         { id:'B4C1-1',  title:'化學變化與質量守恆', url:'https://youtu.be/E6TeYHxIPlw', mins:37  },
@@ -713,6 +715,12 @@ function buildSemContent(gid, sub, sem, data) {
   const pct = all.length ? Math.round(done / all.length * 100) : 0;
   const pid = `${gid}-${sub}-${sem}`;
 
+  const teacherHtml = data.teacher ? `
+    <div style="padding:8px 14px;background:#f7fafc;border-bottom:1px solid #e2e8f0;
+                font-size:12px;color:#718096;">
+      👨‍🏫 授課老師：<strong style="color:#2b6cb0">${data.teacher}</strong>
+    </div>` : '';
+
   const bonusHtml = data.bonus ? `
     <div class="bonus-bar">
       <div class="bonus-bar-title">🌟 延伸學習資源</div>
@@ -751,6 +759,7 @@ function buildSemContent(gid, sub, sem, data) {
   }).join('');
 
   return `
+    ${teacherHtml}
     ${bonusHtml}
     <div class="progress-wrap">
       <div class="progress-labels">
