@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>線上課程學習平台</title>
+<!--
+  ════════════════════════════════════════════
+  【使用說明】
+  1. 密碼：請搜尋 const PASSWORD 那行，改成你要的密碼
+  2. 新增課程：在 const COURSES 區塊新增對應的 key
+     格式：'G{年級}|{科目}|{上/下}'
+     例如：'G8|數學|上'  → 國二數學上學期
+          'G4|英語|下'  → 小四英語下學期
+  3. 年級代碼：G1=小一 G2=小二 G3=小三 G4=小四 G5=小五 G6=小六
+              G7=國一 G8=國二 G9=國三
+  ════════════════════════════════════════════
+-->
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, 'Helvetica Neue', 'Noto Sans TC', sans-serif;
+  background: #f0f4f8; color: #1a202c; min-height: 100vh;
+}
+
+/* ── LOGIN ── */
+#login-screen {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 55%, #553c9a 100%);
+}
+.login-box {
+  background: #fff; border-radius: 24px; padding: 48px 40px;
+  width: min(360px, 90vw); text-align: center;
+  box-shadow: 0 24px 64px rgba(0,0,0,.3);
+}
+.login-logo { font-size: 64px; margin-bottom: 14px; }
+.login-box h1 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+.login-box p  { color: #718096; font-size: 14px; margin-bottom: 28px; }
+.login-input {
+  width: 100%; padding: 14px 16px;
+  border: 2px solid #e2e8f0; border-radius: 12px;
+  font-size: 16px; outline: none; transition: border-color .2s;
+  font-family: inherit;
+}
+.login-input:focus { border-color: #2b6cb0; }
+.login-btn {
+  display: block; width: 100%; margin-top: 14px;
+  padding: 14px; border: none; border-radius: 12px;
+  background: linear-gradient(135deg, #2b6cb0, #553c9a);
+  color: #fff; font-size: 16px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: opacity .2s;
+}
+.login-btn:hover { opacity: .88; }
+.login-error { color: #e53e3e; font-size: 13px; margin-top: 10px; display: none; }
+
+/* ── APP SHELL ── */
+#app { display: none; }
+
+header {
+  background: linear-gradient(135deg, #1a365d, #2b6cb0);
+  color: #fff; padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+header h1 { font-size: 18px; font-weight: 800; }
+.logout-btn {
+  background: rgba(255,255,255,.18); color: #fff;
+  border: 1px solid rgba(255,255,255,.4);
+  padding: 7px 16px; border-radius: 8px;
+  cursor: pointer; font-size: 13px; font-family: inherit;
+  transition: background .2s;
+}
+.logout-btn:hover { background: rgba(255,255,255,.3); }
+
+/* ── LEVEL TABS ── */
+.level-tabs {
+  display: flex; background: #fff;
+  border-bottom: 2px solid #e2e8f0; padding: 0 16px;
+}
+.level-tab {
+  padding: 13px 24px; font-size: 15px; font-weight: 700;
+  color: #718096; background: none;
+  border: none; border-bottom: 3px solid transparent;
+  margin-bottom: -2px; cursor: pointer; font-family: inherit;
+  transition: all .2s;
+}
+.level-tab.active { color: #2b6cb0; border-bottom-color: #2b6cb0; }
+
+/* ── GRADE BAR ── */
+.grade-bar {
+  background: #fff; padding: 10px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.grade-btn {
+  padding: 8px 18px; border-radius: 20px;
+  border: 2px solid #e2e8f0; background: #f7fafc;
+  color: #4a5568; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: all .2s;
+}
+.grade-btn:hover { border-color: #2b6cb0; color: #2b6cb0; background: #ebf8ff; }
+.grade-btn.active { background: #2b6cb0; border-color: #2b6cb0; color: #fff; }
+
+/* ── MAIN CONTENT ── */
+.main-content { max-width: 980px; margin: 0 auto; padding: 20px 16px 48px; }
+.section-title {
+  font-size: 15px; font-weight: 700; color: #4a5568;
+  margin-bottom: 14px; padding-left: 4px;
+}
+
+/* ── SUBJECT GRID ── */
+.subject-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 14px;
+}
+.subject-card {
+  background: #fff; border-radius: 16px;
+  border: 2px solid #e2e8f0; overflow: hidden;
+  transition: transform .2s, box-shadow .2s;
+}
+.subject-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+}
+
+/* ── SUBJECT HEADER ── */
+.subject-hdr {
+  display: flex; align-items: center;
+  padding: 15px 16px; cursor: pointer; gap: 12px;
+  user-select: none;
+}
+.subject-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.subject-info { flex: 1; min-width: 0; }
+.subject-name { font-size: 16px; font-weight: 800; }
+.subject-badges { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; }
+.sem-badge {
+  font-size: 11px; font-weight: 700;
+  padding: 3px 8px; border-radius: 10px;
+}
+.sem-badge.has  { background: #c6f6d5; color: #22543d; }
+.sem-badge.none { background: #edf2f7; color: #a0aec0; }
+.subject-arrow { color: #cbd5e0; font-size: 13px; transition: transform .25s; flex-shrink: 0; }
+.subject-arrow.open { transform: rotate(180deg); }
+
+/* ── SUBJECT BODY ── */
+.subject-body { display: none; border-top: 2px solid #e2e8f0; }
+.subject-body.open { display: block; }
+
+/* ── SEM TABS ── */
+.sem-tabs { display: flex; border-bottom: 1px solid #e2e8f0; background: #f7fafc; }
+.sem-tab {
+  padding: 10px 20px; font-size: 13px; font-weight: 700;
+  color: #718096; border: none; background: none;
+  border-bottom: 3px solid transparent; margin-bottom: -1px;
+  cursor: pointer; font-family: inherit; transition: all .15s;
+}
+.sem-tab.active { color: #2b6cb0; border-bottom-color: #2b6cb0; background: #fff; }
+
+/* ── BONUS BAR ── */
+.bonus-bar {
+  background: linear-gradient(135deg, #fefce8, #fef9c3);
+  border-bottom: 1px solid #fde68a; padding: 12px 14px;
+}
+.bonus-bar-title { font-size: 11px; font-weight: 800; color: #92400e; margin-bottom: 8px; }
+.bonus-links { display: flex; flex-wrap: wrap; gap: 6px; }
+.bonus-link {
+  background: #fff; border: 1px solid #fbbf24; color: #92400e;
+  padding: 5px 12px; border-radius: 14px; font-size: 12px;
+  font-weight: 600; text-decoration: none; transition: all .15s;
+}
+.bonus-link:hover { background: #fef3c7; transform: translateY(-1px); }
+
+/* ── PROGRESS ── */
+.progress-wrap {
+  padding: 10px 14px; background: #fff;
+  border-bottom: 1px solid #f0f4f8;
+}
+.progress-labels {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: #718096; margin-bottom: 5px;
+}
+.progress-track {
+  height: 7px; background: #e2e8f0;
+  border-radius: 4px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #38a169, #2b6cb0);
+  border-radius: 4px; transition: width .5s ease;
+}
+
+/* ── CHAPTERS ── */
+.chapter-block { border-bottom: 1px solid #f0f4f8; }
+.chapter-block:last-child { border-bottom: none; }
+.chapter-hdr {
+  display: flex; align-items: center;
+  padding: 10px 14px; cursor: pointer;
+  background: #f7fafc; gap: 9px;
+  transition: background .15s;
+}
+.chapter-hdr:hover { background: #edf2f7; }
+.ch-tag {
+  font-size: 10px; font-weight: 800;
+  padding: 3px 7px; border-radius: 5px;
+  background: #2b6cb0; color: #fff; white-space: nowrap;
+}
+.ch-title { flex: 1; font-size: 13px; font-weight: 700; }
+.ch-meta  { font-size: 11px; color: #a0aec0; white-space: nowrap; }
+.ch-arrow { color: #cbd5e0; font-size: 11px; transition: transform .2s; }
+.ch-arrow.open { transform: rotate(180deg); }
+.chapter-videos { display: none; }
+.chapter-videos.open { display: block; }
+
+/* ── VIDEO ROW ── */
+.video-row {
+  display: flex; align-items: center;
+  padding: 10px 14px; gap: 9px;
+  border-bottom: 1px solid #f0f4f8;
+  transition: background .12s;
+}
+.video-row:last-child { border-bottom: none; }
+.video-row:hover { background: #f7fafc; }
+.video-row.watched { background: #f0fff4; }
+.v-num   { font-size: 10px; color: #a0aec0; font-weight: 700; min-width: 72px; font-family: monospace; }
+.v-title { flex: 1; font-size: 13px; line-height: 1.4; }
+.v-title.exam { color: #b45309; font-weight: 700; }
+.v-dur   { font-size: 11px; color: #a0aec0; white-space: nowrap; min-width: 36px; text-align: right; }
+.v-btn {
+  padding: 6px 11px; border-radius: 7px;
+  background: #2b6cb0; color: #fff;
+  text-decoration: none; font-size: 12px; font-weight: 700;
+  white-space: nowrap; transition: all .15s; flex-shrink: 0;
+}
+.v-btn:hover   { background: #2c5282; transform: translateY(-1px); }
+.v-btn.exam-btn { background: #d97706; }
+.v-btn.exam-btn:hover { background: #b45309; }
+.v-check {
+  width: 17px; height: 17px; cursor: pointer;
+  accent-color: #38a169; flex-shrink: 0;
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  padding: 36px 20px; text-align: center; color: #a0aec0;
+}
+.empty-icon { font-size: 40px; margin-bottom: 8px; }
+.empty-state p { font-size: 13px; }
+.empty-state .hint { font-size: 11px; color: #cbd5e0; margin-top: 4px; }
+
+@media (max-width: 600px) {
+  .subject-grid { grid-template-columns: 1fr; }
+  .v-num { display: none; }
+  header h1 { font-size: 15px; }
+  .level-tab { padding: 12px 16px; font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════ LOGIN ════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">📚</div>
+    <h1>線上課程學習平台</h1>
+    <p>請輸入家長設定的密碼</p>
+    <input class="login-input" type="password" id="pw"
+           placeholder="輸入密碼…"
+           onkeydown="if(event.key==='Enter')login()">
+    <button class="login-btn" onclick="login()">進入課程 →</button>
+    <p class="login-error" id="login-error">❌ 密碼錯誤，請再試一次</p>
+  </div>
+</div>
+
+<!-- ════════════ APP ════════════ -->
+<div id="app">
+  <header>
+    <h1>📚 線上課程學習平台</h1>
+    <button class="logout-btn" onclick="logout()">登出</button>
+  </header>
+
+  <div class="level-tabs">
+    <button class="level-tab active" id="tab-elem" onclick="setLevel('elem')">🏫 國小課程</button>
+    <button class="level-tab"        id="tab-jh"   onclick="setLevel('jh')">🏫 國中課程</button>
+  </div>
+
+  <div class="grade-bar" id="grade-bar"></div>
+
+  <div class="main-content">
+    <p class="section-title" id="section-title"></p>
+    <div class="subject-grid" id="subject-grid"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+//  ★ 請修改這裡的密碼 ★
+// ════════════════════════════════════════════
+const PASSWORD = 'sc1234';
+
+// ── 科目外觀設定 ─────────────────────────────
+const SUB_CFG = {
+  '國語':     { icon:'📖', c:'#c53030', bg:'#fff5f5' },
+  '國文':     { icon:'📖', c:'#c53030', bg:'#fff5f5' },
+  '數學':     { icon:'🔢', c:'#2b6cb0', bg:'#ebf8ff' },
+  '英語':     { icon:'🔤', c:'#6b46c1', bg:'#faf5ff' },
+  '生活':     { icon:'🌈', c:'#319795', bg:'#e6fffa' },
+  '自然':     { icon:'🔬', c:'#276749', bg:'#f0fff4' },
+  '社會':     { icon:'🏛️', c:'#c05621', bg:'#fffaf0' },
+  '理化':     { icon:'⚗️', c:'#276749', bg:'#f0fff4' },
+  '生物':     { icon:'🌿', c:'#2d6a4f', bg:'#ecfdf5' },
+  '地球科學': { icon:'🌏', c:'#1d6a8a', bg:'#ecfeff' },
+  '歷史':     { icon:'📜', c:'#744210', bg:'#fffbeb' },
+  '地理':     { icon:'🗺️', c:'#2c7a7b', bg:'#f0fdfa' },
+  '公民':     { icon:'⚖️', c:'#553c9a', bg:'#f5f3ff' },
+};
+
+// ── 年級設定 ─────────────────────────────────
+const GRADES = [
+  { id:'G1', label:'小一', full:'小學一年級', level:'elem', subs:['國語','數學','生活'] },
+  { id:'G2', label:'小二', full:'小學二年級', level:'elem', subs:['國語','數學','生活'] },
+  { id:'G3', label:'小三', full:'小學三年級', level:'elem', subs:['國語','數學','自然','社會','英語'] },
+  { id:'G4', label:'小四', full:'小學四年級', level:'elem', subs:['國語','數學','自然','社會','英語'] },
+  { id:'G5', label:'小五', full:'小學五年級', level:'elem', subs:['國語','數學','自然','社會','英語'] },
+  { id:'G6', label:'小六', full:'小學六年級', level:'elem', subs:['國語','數學','自然','社會','英語'] },
+  { id:'G7', label:'國一', full:'國中一年級', level:'jh',   subs:['國文','數學','英語','理化','生物','地球科學','歷史','地理','公民'] },
+  { id:'G8', label:'國二', full:'國中二年級', level:'jh',   subs:['國文','數學','英語','理化','生物','地球科學','歷史','地理','公民'] },
+  { id:'G9', label:'國三', full:'國中三年級', level:'jh',   subs:['國文','數學','英語','理化','生物','地球科學','歷史','地理','公民'] },
+];
+
+// ════════════════════════════════════════════
+//  課程資料
+//  Key 格式：'G{年級}|{科目}|{上/下}'
+//  例如：'G8|理化|上'  → 國二理化上學期
+//        'G4|數學|下'  → 小四數學下學期
+//
+//  每個值的結構：
+//  {
+//    bonus: [{ label, url }, ...],  ← 選填，延伸資源
+//    chapters: [
+//      {
+//        id, title,
+//        videos: [{ id, title, url, mins, isExam? }, ...]
+//      }
+//    ]
+//  }
+// ════════════════════════════════════════════
+const COURSES = {
+
+  // ── 國二 理化 上學期（川楓老師 B3） ──────────
+  'G8|理化|上': {
+    bonus: [
+      { label:'升國二暑假先修安排',     url:'https://youtu.be/-0Xcv3FYn_A' },
+      { label:'升國三自然科準備策略',   url:'https://youtu.be/3EdVsI4M6HE' },
+      { label:'考高分效率讀書法',       url:'https://youtu.be/R1YgKvQRArk' },
+    ],
+    chapters: [
+      { id:'B3C1', title:'第一章：實驗安全與測量', videos:[
+        { id:'B3C1-1',  title:'實驗安全與設計',   url:'https://youtu.be/kQn2Nm0hrCM', mins:57  },
+        { id:'B3C1-2',  title:'長度與體積的測量', url:'https://youtu.be/8_2rn5JM3g4', mins:65  },
+        { id:'B3C1-3',  title:'質量的測量',       url:'https://youtu.be/Sfot4hVt-js', mins:29  },
+        { id:'B3C1-4',  title:'物質的密度',       url:'https://youtu.be/4lX46_s7JFk', mins:102 },
+        { id:'B3C1-ex', title:'歷屆會考試題解析', url:'https://youtu.be/1axQuntMKwk', mins:36, isExam:true },
+      ]},
+      { id:'B3C2', title:'第二章：物質的世界', videos:[
+        { id:'B3C2-1',  title:'認識物質',         url:'https://youtu.be/aEEd5MhLTD0', mins:67  },
+        { id:'B3C2-2',  title:'水溶液及濃度',     url:'https://youtu.be/CKNPXo9l-qI', mins:108 },
+        { id:'B3C2-3',  title:'空氣',             url:'https://youtu.be/ujNU9HoXCTo', mins:46  },
+        { id:'B3C2-ex', title:'歷屆會考試題解析', url:'https://youtu.be/VLEKzTyRRU4', mins:50, isExam:true },
+      ]},
+      { id:'B3C3', title:'第三章：聲音與波', videos:[
+        { id:'B3C3-1',  title:'波的傳播',         url:'https://youtu.be/JAxyGBJsLgk', mins:69 },
+        { id:'B3C3-2',  title:'聲音的傳播',       url:'https://youtu.be/tkVgG1MTOq4', mins:32 },
+        { id:'B3C3-3',  title:'聲波反射與超聲波', url:'https://youtu.be/Wi8dzz8gus8', mins:45 },
+        { id:'B3C3-4',  title:'多變的聲音',       url:'https://youtu.be/TJ2VwVVt-Z8', mins:41 },
+        { id:'B3C3-ex', title:'歷屆會考試題解析', url:'https://youtu.be/YD1hRwiQ_uI', mins:44, isExam:true },
+      ]},
+      { id:'B3C4', title:'第四章：光與光學', videos:[
+        { id:'B3C4-1',  title:'光的直進',         url:'https://youtu.be/jvIys5anwVE', mins:40 },
+        { id:'B3C4-2',  title:'光的反射與面鏡',   url:'https://youtu.be/zu5hKsIMu60', mins:54 },
+        { id:'B3C4-3',  title:'光的折射原理',     url:'https://youtu.be/8hC094znZxM', mins:43 },
+        { id:'B3C4-4',  title:'透鏡的折射',       url:'https://youtu.be/KgBH4eGxY4Y', mins:74 },
+        { id:'B3C4-5',  title:'光學儀器',         url:'https://youtu.be/fEZlpWsyZSo', mins:34 },
+        { id:'B3C4-6',  title:'色光與顏色',       url:'https://youtu.be/Cq2TzGhJH14', mins:41 },
+        { id:'B3C4-ex', title:'歷屆會考試題解析', url:'https://youtu.be/5Ri-y0-ASIA', mins:24, isExam:true },
+      ]},
+      { id:'B3C5', title:'第五章：溫度與熱', videos:[
+        { id:'B3C5-1',  title:'溫度與溫度計',     url:'https://youtu.be/iiX1le7kAag', mins:38 },
+        { id:'B3C5-2',  title:'熱量與比熱',       url:'https://youtu.be/Nb9n2PExZQk', mins:85 },
+        { id:'B3C5-3',  title:'熱的傳播方式',     url:'https://youtu.be/uRQP2sh2drc', mins:43 },
+        { id:'B3C5-4',  title:'熱對物質的影響',   url:'https://youtu.be/UfDhzKoG4x8', mins:66 },
+        { id:'B3C5-ex', title:'歷屆會考試題解析', url:'https://youtu.be/dayK2dDjm_I', mins:59, isExam:true },
+      ]},
+      { id:'B3C6', title:'第六章：元素與化合物', videos:[
+        { id:'B3C6-1',  title:'元素與化合物',           url:'https://youtu.be/cmhBEsOYugM', mins:23 },
+        { id:'B3C6-2',  title:'認識元素',               url:'https://youtu.be/kBiXVqQnevc', mins:54 },
+        { id:'B3C6-3',  title:'元素週期表',             url:'https://youtu.be/X74vRI3w_bM', mins:33 },
+        { id:'B3C6-4',  title:'原子的結構',             url:'https://youtu.be/ykD8LCpHOP4', mins:43 },
+        { id:'B3C6-5',  title:'分子與化學式',           url:'https://youtu.be/GUKi_Gwec5w', mins:52 },
+        { id:'B3C6-6',  title:'物質變化的粒子觀點',     url:'https://youtu.be/1lkLfobZxS8', mins:19 },
+        { id:'B3C6-ex', title:'歷屆會考試題解析',       url:'https://youtu.be/H1sF3TWaMRw', mins:35, isExam:true },
+      ]},
+    ]
+  },
+
+  // ── 國二 理化 下學期（川楓老師 B4） ──────────
+  'G8|理化|下': {
+    chapters: [
+      { id:'B4C1', title:'第一章：化學反應與計量', videos:[
+        { id:'B4C1-1',  title:'化學變化與質量守恆', url:'https://youtu.be/E6TeYHxIPlw', mins:37  },
+        { id:'B4C1-2',  title:'原子量與莫耳數',     url:'https://youtu.be/JmRan81w-Jg', mins:84  },
+        { id:'B4C1-3',  title:'化學反應方程式',     url:'https://youtu.be/BZni-COuhoM', mins:40  },
+        { id:'B4C1-4',  title:'化學計量',           url:'https://youtu.be/bWjNT3KsCww', mins:74  },
+        { id:'B4C1-ex', title:'歷屆會考試題解析',   url:'https://youtu.be/gR8c9uTxD-I', mins:67, isExam:true },
+      ]},
+      { id:'B4C2', title:'第二章：氧化與還原', videos:[
+        { id:'B4C2-1',  title:'氧化反應',           url:'https://youtu.be/Oera419Rfd4', mins:35 },
+        { id:'B4C2-2',  title:'氧化還原與其應用',   url:'https://youtu.be/6DHT4_mo3L8', mins:85 },
+        { id:'B4C2-ex', title:'歷屆會考試題解析',   url:'https://youtu.be/VGHG0gh7kNU', mins:25, isExam:true },
+      ]},
+      { id:'B4C3', title:'第三章：酸鹼與電解質', videos:[
+        { id:'B4C3-1',  title:'認識電解質',         url:'https://youtu.be/S-g81LsVVYU', mins:50 },
+        { id:'B4C3-2',  title:'常見的酸與鹼',       url:'https://youtu.be/zYJzqQADEbs', mins:65 },
+        { id:'B4C3-3',  title:'酸鹼的濃度',         url:'https://youtu.be/IEtEy-Aik6Y', mins:69 },
+        { id:'B4C3-4',  title:'酸鹼中和',           url:'https://youtu.be/BaIo94yk1G8', mins:64 },
+        { id:'B4C3-ex', title:'歷屆會考試題解析',   url:'https://youtu.be/zT5c0Q_rWBo', mins:50, isExam:true },
+      ]},
+      { id:'B4C4', title:'第四章：反應速率與平衡', videos:[
+        { id:'B4C4-1',  title:'濃度表面積與反應速率',     url:'https://youtu.be/EnAiWumurOo', mins:31 },
+        { id:'B4C4-2',  title:'溫度對反應速率的影響',     url:'https://youtu.be/TnMJ7r6JhIk', mins:24 },
+        { id:'B4C4-3',  title:'催化劑對反應速率的影響',   url:'https://youtu.be/7pnXzLpX5_U', mins:18 },
+        { id:'B4C4-4',  title:'可逆反應與化學平衡',       url:'https://youtu.be/c-i4LX_fqC0', mins:48 },
+        { id:'B4C4-ex', title:'歷屆會考試題解析',         url:'https://youtu.be/UbFKvQk1tks', mins:25, isExam:true },
+      ]},
+      { id:'B4C5', title:'第五章：有機化學', videos:[
+        { id:'B4C5-1',  title:'有機化合物',         url:'https://youtu.be/oLBZYFmkvOk', mins:24 },
+        { id:'B4C5-2',  title:'常見的有機化合物',   url:'https://youtu.be/Qn6yVNx9DC0', mins:59 },
+        { id:'B4C5-3',  title:'常用的清潔劑',       url:'https://youtu.be/avqbZ7uQ5dE', mins:28 },
+        { id:'B4C5-4',  title:'有機聚合物與衣料',   url:'https://youtu.be/6LTDGxXaftY', mins:37 },
+        { id:'B4C5-ex', title:'歷屆會考試題解析',   url:'https://youtu.be/JtAD3lf9B20', mins:46, isExam:true },
+      ]},
+      { id:'B4C6', title:'第六章：力與壓力', videos:[
+        { id:'B4C6-1',  title:'力與平衡',           url:'https://youtu.be/TgjgnbJ4_Vk', mins:68  },
+        { id:'B4C6-2',  title:'摩擦力',             url:'https://youtu.be/nrEp4zwM3PM', mins:48  },
+        { id:'B4C6-3',  title:'固體壓力',           url:'https://youtu.be/2Cco2bhMN6A', mins:27  },
+        { id:'B4C6-4',  title:'液體壓力',           url:'https://youtu.be/kCO3npa78R0', mins:47  },
+        { id:'B4C6-5',  title:'大氣壓力',           url:'https://youtu.be/AAJmWBrICW4', mins:43  },
+        { id:'B4C6-6',  title:'水的浮力',           url:'https://youtu.be/hYVHIuiphG4', mins:100 },
+        { id:'B4C6-ex', title:'歷屆會考試題解析',   url:'https://youtu.be/sR4Y6IIHI-U', mins:76, isExam:true },
+      ]},
+    ]
+  },
+
+  // ════════════════════════════════════════════
+  //  以下是尚未購買的課程預留欄位
+  //  購買後將連結填入對應區塊即可
+  //  目前留空，頁面會顯示「尚未加入課程」
+  // ════════════════════════════════════════════
+
+  // 'G8|數學|上': { chapters: [...] },
+  // 'G8|數學|下': { chapters: [...] },
+  // 'G8|英語|上': { chapters: [...] },
+  // 'G7|理化|上': { chapters: [...] },
+  // ... 其他科目依此類推
+
+};
+
+// ════════════════════════════════════════════
+//  以下為程式邏輯，一般不需要修改
+// ════════════════════════════════════════════
+
+const SESS_KEY    = 'lms_auth';
+const WATCHED_KEY = 'lms_watched';
+
+let currentLevel  = 'elem';
+let currentGrade  = 'G1';
+let openSubject   = null;
+let openSem       = null;
+
+// ── AUTH ─────────────────────────────────────
+function login() {
+  if (document.getElementById('pw').value === PASSWORD) {
+    sessionStorage.setItem(SESS_KEY, '1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initApp();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('pw').value = '';
+    document.getElementById('pw').focus();
+  }
+}
+function logout() {
+  sessionStorage.removeItem(SESS_KEY);
+  location.reload();
+}
+
+// ── WATCHED ──────────────────────────────────
+function getWatched() {
+  try { return JSON.parse(localStorage.getItem(WATCHED_KEY)) || {}; }
+  catch(e) { return {}; }
+}
+function toggleWatched(vid) {
+  const w = getWatched();
+  w[vid] = !w[vid];
+  localStorage.setItem(WATCHED_KEY, JSON.stringify(w));
+  const row = document.getElementById('vr-' + vid);
+  if (row) row.className = 'video-row' + (w[vid] ? ' watched' : '');
+  updateProgressBar(vid, w);
+}
+function updateProgressBar(vid, w) {
+  for (const [key, data] of Object.entries(COURSES)) {
+    for (const ch of data.chapters) {
+      if (ch.videos.some(v => v.id === vid)) {
+        const all  = data.chapters.flatMap(c => c.videos);
+        const done = all.filter(v => w[v.id]).length;
+        const pct  = Math.round(done / all.length * 100);
+        const fill = document.getElementById('pf-' + key.replace(/\|/g,'-'));
+        const lbl  = document.getElementById('pl-' + key.replace(/\|/g,'-'));
+        if (fill) fill.style.width = pct + '%';
+        if (lbl)  lbl.textContent  = `${done} / ${all.length} 支（${pct}%）`;
+        return;
+      }
+    }
+  }
+}
+
+// ── LEVEL / GRADE ────────────────────────────
+function setLevel(lv) {
+  currentLevel = lv; openSubject = null; openSem = null;
+  document.getElementById('tab-elem').classList.toggle('active', lv === 'elem');
+  document.getElementById('tab-jh').classList.toggle('active',   lv === 'jh');
+  currentGrade = GRADES.find(g => g.level === lv).id;
+  renderGrades();
+  renderSubjects();
+}
+function setGrade(gid) {
+  currentGrade = gid; openSubject = null; openSem = null;
+  document.querySelectorAll('.grade-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.gid === gid));
+  renderSubjects();
+}
+
+// ── RENDER GRADES ────────────────────────────
+function renderGrades() {
+  document.getElementById('grade-bar').innerHTML =
+    GRADES.filter(g => g.level === currentLevel).map(g =>
+      `<button class="grade-btn${g.id === currentGrade ? ' active' : ''}"
+               data-gid="${g.id}" onclick="setGrade('${g.id}')">${g.label}</button>`
+    ).join('');
+}
+
+// ── RENDER SUBJECTS ──────────────────────────
+function renderSubjects() {
+  const grade = GRADES.find(g => g.id === currentGrade);
+  document.getElementById('section-title').textContent = `${grade.full} ・ 考科課程`;
+
+  document.getElementById('subject-grid').innerHTML = grade.subs.map(sub => {
+    const cfg    = SUB_CFG[sub] || { icon:'📚', c:'#4a5568', bg:'#f7fafc' };
+    const upKey  = `${currentGrade}|${sub}|上`;
+    const dnKey  = `${currentGrade}|${sub}|下`;
+    const upData = COURSES[upKey];
+    const dnData = COURSES[dnKey];
+
+    const badges = ['上','下'].map(sem => {
+      const d   = sem === '上' ? upData : dnData;
+      const cnt = d ? d.chapters.reduce((s,c) => s + c.videos.length, 0) : 0;
+      return `<span class="sem-badge ${d ? 'has' : 'none'}">
+        ${sem}學期${d ? ` · ${cnt}支` : ''}
+      </span>`;
+    }).join('');
+
+    const isOpen = openSubject === sub;
+    return `
+      <div class="subject-card" style="border-color:${cfg.c}40"
+           id="sc-${currentGrade}-${sub}">
+        <div class="subject-hdr"
+             onclick="toggleSubject('${currentGrade}','${sub}','${cfg.c}')">
+          <div class="subject-icon" style="background:${cfg.bg}">${cfg.icon}</div>
+          <div class="subject-info">
+            <div class="subject-name" style="color:${cfg.c}">${sub}</div>
+            <div class="subject-badges">${badges}</div>
+          </div>
+          <span class="subject-arrow${isOpen ? ' open' : ''}"
+                id="sa-${currentGrade}-${sub}">▼</span>
+        </div>
+        <div class="subject-body${isOpen ? ' open' : ''}"
+             id="sb-${currentGrade}-${sub}">
+          ${isOpen ? buildSubjectBody(currentGrade, sub) : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── TOGGLE SUBJECT ───────────────────────────
+function toggleSubject(gid, sub) {
+  if (openSubject === sub) {
+    openSubject = null; openSem = null;
+  } else {
+    openSubject = sub;
+    openSem = COURSES[`${gid}|${sub}|上`] ? '上' : '下';
+  }
+  const body  = document.getElementById(`sb-${gid}-${sub}`);
+  const arrow = document.getElementById(`sa-${gid}-${sub}`);
+  if (openSubject === sub) {
+    body.innerHTML = buildSubjectBody(gid, sub);
+    body.classList.add('open');
+    arrow.classList.add('open');
+  } else {
+    body.classList.remove('open');
+    arrow.classList.remove('open');
+  }
+}
+
+// ── BUILD SUBJECT BODY ───────────────────────
+function buildSubjectBody(gid, sub) {
+  const upData = COURSES[`${gid}|${sub}|上`];
+  const dnData = COURSES[`${gid}|${sub}|下`];
+  if (!upData && !dnData)
+    return `<div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <p>尚未加入課程</p>
+      <p class="hint">購買課程後請告知家長新增</p>
+    </div>`;
+
+  const sems = [
+    { key:'上', data: upData },
+    { key:'下', data: dnData },
+  ].filter(s => s.data);
+  if (!openSem || !sems.find(s => s.key === openSem)) openSem = sems[0].key;
+  const curData = COURSES[`${gid}|${sub}|${openSem}`];
+
+  const tabs = sems.map(s =>
+    `<button class="sem-tab${s.key === openSem ? ' active' : ''}"
+             onclick="setSem('${gid}','${sub}','${s.key}')">${s.key}學期</button>`
+  ).join('');
+
+  return `<div class="sem-tabs">${tabs}</div>${buildSemContent(gid, sub, openSem, curData)}`;
+}
+
+// ── SET SEMESTER ─────────────────────────────
+function setSem(gid, sub, sem) {
+  openSem = sem;
+  const body = document.getElementById(`sb-${gid}-${sub}`);
+  if (body) body.innerHTML = buildSubjectBody(gid, sub);
+}
+
+// ── BUILD SEM CONTENT ────────────────────────
+function buildSemContent(gid, sub, sem, data) {
+  if (!data)
+    return `<div class="empty-state">
+      <div class="empty-icon">📭</div><p>尚未加入課程</p>
+    </div>`;
+
+  const w   = getWatched();
+  const all = data.chapters.flatMap(c => c.videos);
+  const done= all.filter(v => w[v.id]).length;
+  const pct = all.length ? Math.round(done / all.length * 100) : 0;
+  const pid = `${gid}-${sub}-${sem}`;
+
+  const bonusHtml = data.bonus ? `
+    <div class="bonus-bar">
+      <div class="bonus-bar-title">🌟 延伸學習資源</div>
+      <div class="bonus-links">
+        ${data.bonus.map(b =>
+          `<a href="${b.url}" target="_blank" class="bonus-link">▶ ${b.label}</a>`
+        ).join('')}
+      </div>
+    </div>` : '';
+
+  const chapters = data.chapters.map(ch => {
+    const totalMins = ch.videos.reduce((s,v)=>s+v.mins,0);
+    const wCnt      = ch.videos.filter(v=>w[v.id]).length;
+    const videos    = ch.videos.map(v => `
+      <div class="video-row${w[v.id]?' watched':''}" id="vr-${v.id}">
+        <span class="v-num">${v.id}</span>
+        <span class="v-title${v.isExam?' exam':''}">
+          ${v.isExam ? '📝 ' : ''}${v.title}
+        </span>
+        <span class="v-dur">${fmtMins(v.mins)}</span>
+        <a href="${v.url}" target="_blank"
+           class="v-btn${v.isExam?' exam-btn':''}">▶ 觀看</a>
+        <input type="checkbox" class="v-check" title="標記已看"
+               ${w[v.id]?'checked':''} onchange="toggleWatched('${v.id}')">
+      </div>`).join('');
+    return `
+      <div class="chapter-block">
+        <div class="chapter-hdr" onclick="toggleCh(this)">
+          <span class="ch-tag">${ch.id}</span>
+          <span class="ch-title">${ch.title}</span>
+          <span class="ch-meta">${ch.videos.length}支 · ${fmtMins(totalMins)}${wCnt?` · ✓${wCnt}`:''}</span>
+          <span class="ch-arrow open">▼</span>
+        </div>
+        <div class="chapter-videos open">${videos}</div>
+      </div>`;
+  }).join('');
+
+  return `
+    ${bonusHtml}
+    <div class="progress-wrap">
+      <div class="progress-labels">
+        <span>學習進度</span>
+        <span id="pl-${pid}">${done} / ${all.length} 支（${pct}%）</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="pf-${pid}" style="width:${pct}%"></div>
+      </div>
+    </div>
+    ${chapters}`;
+}
+
+// ── TOGGLE CHAPTER ───────────────────────────
+function toggleCh(hdr) {
+  const body = hdr.nextElementSibling;
+  const arr  = hdr.querySelector('.ch-arrow');
+  const open = body.classList.toggle('open');
+  arr.classList.toggle('open', open);
+}
+
+// ── HELPERS ──────────────────────────────────
+function fmtMins(m) {
+  if (m < 60) return m + '分';
+  return Math.floor(m/60) + '時' + (m % 60 ? (m % 60) + '分' : '');
+}
+
+// ── INIT ─────────────────────────────────────
+function initApp() {
+  setLevel('elem');
+}
+
+document.getElementById('pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') login();
+});
+
+if (sessionStorage.getItem(SESS_KEY) === '1') {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  initApp();
+}
+</script>
+</body>
+</html>
