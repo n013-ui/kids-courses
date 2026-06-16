@@ -269,12 +269,16 @@ header h1 { font-size: 18px; font-weight: 800; }
   <div class="login-box">
     <div class="login-logo">📚</div>
     <h1>線上課程學習平台</h1>
-    <p>請輸入家長設定的密碼</p>
+    <p>請輸入帳號與密碼</p>
+    <input class="login-input" type="text" id="username"
+           placeholder="帳號"
+           onkeydown="if(event.key==='Enter')document.getElementById('pw').focus()">
     <input class="login-input" type="password" id="pw"
-           placeholder="輸入密碼…"
+           placeholder="密碼"
+           style="margin-top:10px"
            onkeydown="if(event.key==='Enter')login()">
     <button class="login-btn" id="login-btn" onclick="login()">進入課程 →</button>
-    <p class="login-error" id="login-error">❌ 密碼錯誤，請再試一次</p>
+    <p class="login-error" id="login-error">❌ 帳號或密碼錯誤</p>
   </div>
 </div>
 
@@ -282,7 +286,10 @@ header h1 { font-size: 18px; font-weight: 800; }
 <div id="app">
   <header>
     <h1>📚 線上課程學習平台</h1>
-    <button class="logout-btn" onclick="logout()">登出</button>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span id="user-label" style="font-size:14px;opacity:.85"></span>
+      <button class="logout-btn" onclick="logout()">登出</button>
+    </div>
   </header>
 
   <div class="level-tabs">
@@ -472,41 +479,37 @@ const COURSES = {
 //  以下為程式邏輯，一般不需要修改
 // ════════════════════════════════════════════
 
-const SESS_KEY    = 'lms_auth';
-const WATCHED_KEY = 'lms_watched';
+const SESS_KEY = 'lms_auth';
 
+let currentUser   = '';
 let currentLevel  = 'elem';
 let currentGrade  = 'G1';
 let openSubject   = null;
 let openSem       = null;
 
+function watchedKey() { return 'lms_watched_' + currentUser; }
+
 // ── AUTH ─────────────────────────────────────
 function login() {
-  const pw  = document.getElementById('pw').value.trim();
-  const btn = document.getElementById('login-btn');
-  const err = document.getElementById('login-error');
-  if (!pw) return;
+  const user = document.getElementById('username').value.trim();
+  const pw   = document.getElementById('pw').value.trim();
+  const btn  = document.getElementById('login-btn');
+  if (!user || !pw) { showLoginError('⚠️ 請輸入帳號與密碼'); return; }
 
-  // 檢查 config.js 是否已設定
   if (!GAS_URL || GAS_URL.includes('YOUR_DEPLOYMENT_ID')) {
-    err.textContent = '⚠️ 請先設定 config.js 的 GAS 網址';
-    err.style.display = 'block';
-    return;
+    showLoginError('⚠️ 請先設定 config.js 的 GAS 網址'); return;
   }
 
   btn.textContent = '驗證中…'; btn.disabled = true;
-  err.style.display = 'none';
+  document.getElementById('login-error').style.display = 'none';
 
-  // 用 JSONP 呼叫 GAS（避免跨網域問題）
   const cbName = '_cb' + Date.now();
   const timer  = setTimeout(() => {
-    cleanup();
-    showLoginError('⚠️ 連線逾時，請稍後再試');
+    cleanup(); showLoginError('⚠️ 連線逾時，請稍後再試');
   }, 12000);
 
   function cleanup() {
-    clearTimeout(timer);
-    delete window[cbName];
+    clearTimeout(timer); delete window[cbName];
     const s = document.getElementById('_gas_script');
     if (s) s.remove();
     btn.textContent = '進入課程 →'; btn.disabled = false;
@@ -515,31 +518,35 @@ function login() {
   window[cbName] = function(data) {
     cleanup();
     if (data && data.ok) {
-      sessionStorage.setItem(SESS_KEY, '1');
+      currentUser = data.user;
+      sessionStorage.setItem(SESS_KEY, data.user);
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
+      document.getElementById('user-label').textContent = '👤 ' + data.user;
       initApp();
     } else {
-      showLoginError('❌ 密碼錯誤，請再試一次');
+      showLoginError('❌ 帳號或密碼錯誤');
       document.getElementById('pw').value = '';
       document.getElementById('pw').focus();
     }
   };
 
-  const script  = document.createElement('script');
-  script.id     = '_gas_script';
+  const script   = document.createElement('script');
+  script.id      = '_gas_script';
   script.onerror = function() {
-    cleanup();
-    showLoginError('⚠️ 連線失敗，請確認網路或 GAS 網址是否正確');
+    cleanup(); showLoginError('⚠️ 連線失敗，請確認網路或 GAS 網址是否正確');
   };
-  script.src = GAS_URL + '?action=checkPw&pw=' + encodeURIComponent(pw) + '&cb=' + cbName;
+  script.src = GAS_URL
+    + '?action=checkLogin'
+    + '&user=' + encodeURIComponent(user)
+    + '&pw='   + encodeURIComponent(pw)
+    + '&cb='   + cbName;
   document.head.appendChild(script);
 }
 
 function showLoginError(msg) {
   const err = document.getElementById('login-error');
-  err.textContent  = msg;
-  err.style.display = 'block';
+  err.textContent = msg; err.style.display = 'block';
 }
 
 function logout() {
@@ -549,13 +556,13 @@ function logout() {
 
 // ── WATCHED ──────────────────────────────────
 function getWatched() {
-  try { return JSON.parse(localStorage.getItem(WATCHED_KEY)) || {}; }
+  try { return JSON.parse(localStorage.getItem(watchedKey())) || {}; }
   catch(e) { return {}; }
 }
 function toggleWatched(vid) {
   const w = getWatched();
   w[vid] = !w[vid];
-  localStorage.setItem(WATCHED_KEY, JSON.stringify(w));
+  localStorage.setItem(watchedKey(), JSON.stringify(w));
   const row = document.getElementById('vr-' + vid);
   if (row) row.className = 'video-row' + (w[vid] ? ' watched' : '');
   updateProgressBar(vid, w);
@@ -784,9 +791,12 @@ document.getElementById('pw').addEventListener('keydown', e => {
   if (e.key === 'Enter') login();
 });
 
-if (sessionStorage.getItem(SESS_KEY) === '1') {
+const _savedUser = sessionStorage.getItem(SESS_KEY);
+if (_savedUser) {
+  currentUser = _savedUser;
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
+  document.getElementById('user-label').textContent = '👤 ' + _savedUser;
   initApp();
 }
 </script>
