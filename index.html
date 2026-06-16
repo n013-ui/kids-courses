@@ -487,13 +487,37 @@ let openSem       = null;
 
 function watchedKey() { return 'lms_watched_' + currentUser; }
 
+// ── JSONP 共用呼叫 ────────────────────────────
+function callGAS(params, callback) {
+  const cbName = '_cb' + Date.now() + Math.random().toString(36).slice(2, 6);
+  const sid    = '_gs_' + cbName;
+  const timer  = setTimeout(() => {
+    delete window[cbName];
+    const s = document.getElementById(sid); if (s) s.remove();
+    callback(null);
+  }, 15000);
+
+  window[cbName] = function(data) {
+    clearTimeout(timer); delete window[cbName];
+    const s = document.getElementById(sid); if (s) s.remove();
+    callback(data);
+  };
+
+  const qs = Object.entries({ ...params, cb: cbName })
+    .map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
+  const s  = document.createElement('script');
+  s.id     = sid;
+  s.onerror = () => { clearTimeout(timer); delete window[cbName]; callback(null); };
+  s.src    = GAS_URL + '?' + qs;
+  document.head.appendChild(s);
+}
+
 // ── AUTH ─────────────────────────────────────
 function login() {
   const user = document.getElementById('username').value.trim();
   const pw   = document.getElementById('pw').value.trim();
   const btn  = document.getElementById('login-btn');
   if (!user || !pw) { showLoginError('⚠️ 請輸入帳號與密碼'); return; }
-
   if (!GAS_URL || GAS_URL.includes('YOUR_DEPLOYMENT_ID')) {
     showLoginError('⚠️ 請先設定 config.js 的 GAS 網址'); return;
   }
@@ -501,45 +525,32 @@ function login() {
   btn.textContent = '驗證中…'; btn.disabled = true;
   document.getElementById('login-error').style.display = 'none';
 
-  const cbName = '_cb' + Date.now();
-  const timer  = setTimeout(() => {
-    cleanup(); showLoginError('⚠️ 連線逾時，請稍後再試');
-  }, 12000);
-
-  function cleanup() {
-    clearTimeout(timer); delete window[cbName];
-    const s = document.getElementById('_gas_script');
-    if (s) s.remove();
-    btn.textContent = '進入課程 →'; btn.disabled = false;
-  }
-
-  window[cbName] = function(data) {
-    cleanup();
-    if (data && data.ok) {
-      currentUser = data.user;
-      sessionStorage.setItem(SESS_KEY, data.user);
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      document.getElementById('user-label').textContent = '👤 ' + data.user;
-      initApp();
-    } else {
-      showLoginError('❌ 帳號或密碼錯誤');
+  callGAS({ action: 'checkLogin', user, pw }, function(data) {
+    if (!data || !data.ok) {
+      btn.textContent = '進入課程 →'; btn.disabled = false;
+      showLoginError(data ? '❌ 帳號或密碼錯誤' : '⚠️ 連線逾時，請稍後再試');
       document.getElementById('pw').value = '';
       document.getElementById('pw').focus();
+      return;
     }
-  };
+    currentUser = data.user;
+    btn.textContent = '載入進度…';
 
-  const script   = document.createElement('script');
-  script.id      = '_gas_script';
-  script.onerror = function() {
-    cleanup(); showLoginError('⚠️ 連線失敗，請確認網路或 GAS 網址是否正確');
-  };
-  script.src = GAS_URL
-    + '?action=checkLogin'
-    + '&user=' + encodeURIComponent(user)
-    + '&pw='   + encodeURIComponent(pw)
-    + '&cb='   + cbName;
-  document.head.appendChild(script);
+    // 登入成功後從雲端載入進度
+    callGAS({ action: 'loadProgress', user: currentUser }, function(prog) {
+      if (prog && prog.watched) {
+        const obj = {};
+        prog.watched.split(',').filter(Boolean).forEach(id => obj[id] = true);
+        localStorage.setItem(watchedKey(), JSON.stringify(obj));
+      }
+      sessionStorage.setItem(SESS_KEY, currentUser);
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('user-label').textContent = '👤 ' + currentUser;
+      btn.textContent = '進入課程 →'; btn.disabled = false;
+      initApp();
+    });
+  });
 }
 
 function showLoginError(msg) {
@@ -557,6 +568,18 @@ function getWatched() {
   try { return JSON.parse(localStorage.getItem(watchedKey())) || {}; }
   catch(e) { return {}; }
 }
+
+let _saveTimer = null;
+function scheduleCloudSave() {
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(function() {
+    if (!currentUser) return;
+    const w       = getWatched();
+    const watched = Object.keys(w).filter(k => w[k]).join(',');
+    callGAS({ action: 'saveProgress', user: currentUser, watched }, function() {});
+  }, 2500);
+}
+
 function toggleWatched(vid) {
   const w = getWatched();
   w[vid] = !w[vid];
@@ -564,6 +587,7 @@ function toggleWatched(vid) {
   const row = document.getElementById('vr-' + vid);
   if (row) row.className = 'video-row' + (w[vid] ? ' watched' : '');
   updateProgressBar(vid, w);
+  scheduleCloudSave();
 }
 function updateProgressBar(vid, w) {
   for (const [key, data] of Object.entries(COURSES)) {
