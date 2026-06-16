@@ -544,6 +544,7 @@ function login() {
         localStorage.setItem(watchedKey(), JSON.stringify(obj));
       }
       sessionStorage.setItem(SESS_KEY, currentUser);
+      sessionStorage.setItem('lms_grade', data.defaultGrade || 'G8');
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       document.getElementById('user-label').textContent = '👤 ' + currentUser;
@@ -560,6 +561,7 @@ function showLoginError(msg) {
 
 function logout() {
   sessionStorage.removeItem(SESS_KEY);
+  sessionStorage.removeItem('lms_grade');
   location.reload();
 }
 
@@ -826,7 +828,10 @@ function fmtMins(m) {
 
 // ── INIT ─────────────────────────────────────
 function initApp() {
-  setLevel('elem');
+  const savedGrade = sessionStorage.getItem('lms_grade') || 'G8';
+  const grade = GRADES.find(g => g.id === savedGrade) || GRADES[2];
+  setLevel(grade.level);
+  setGrade(grade.id);
 }
 
 document.getElementById('pw').addEventListener('keydown', e => {

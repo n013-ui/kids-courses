@@ -23,12 +23,13 @@ function getAccounts() {
   let   sheet = ss.getSheetByName('帳號');
   if (!sheet) {
     sheet = ss.insertSheet('帳號');
-    sheet.appendRow(['帳號', '密碼']);
-    sheet.appendRow(['孩子一', 'child1']);
-    sheet.appendRow(['孩子二', 'child2']);
-    sheet.getRange('A1:B1').setFontWeight('bold');
+    sheet.appendRow(['帳號', '密碼', '預設頁面']);
+    sheet.appendRow(['孩子一', 'child1', 'G8']);
+    sheet.appendRow(['孩子二', 'child2', 'G8']);
+    sheet.getRange('A1:C1').setFontWeight('bold');
     sheet.setColumnWidth(1, 150);
     sheet.setColumnWidth(2, 150);
+    sheet.setColumnWidth(3, 120);
   }
   const data = sheet.getDataRange().getValues();
   return data.slice(1).filter(r => String(r[0]).trim() !== '');
@@ -111,7 +112,9 @@ function doGet(e) {
       const match     = getAccounts().find(r =>
         String(r[0]).trim() === inputUser && String(r[1]).trim() === inputPw
       );
-      result = match ? { ok: true, user: inputUser } : { ok: false };
+      result = match
+        ? { ok: true, user: inputUser, defaultGrade: String(match[2] || 'G8').trim() || 'G8' }
+        : { ok: false };
 
     } else if (action === 'loadProgress') {
       result = loadProgress(String(e.parameter.user || '').trim());
