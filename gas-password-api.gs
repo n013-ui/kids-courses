@@ -17,6 +17,9 @@
 
 const SHEET_ID = '1cs3oY6ncFJgwaE8W5v4lTz6CEhveEIurw_pGEEoEIiQ';
 
+// Sheets 的數字欄位讀回來是 number 型別，統一轉成字串再比對
+function cs(v) { return String(v == null ? '' : v).trim(); }
+
 // ── 帳號工作表 ──────────────────────────────
 function getAccounts() {
   const ss    = SpreadsheetApp.openById(SHEET_ID);
@@ -32,7 +35,10 @@ function getAccounts() {
     sheet.setColumnWidth(3, 120);
   }
   const data = sheet.getDataRange().getValues();
-  return data.slice(1).filter(r => String(r[0]).trim() !== '');
+  // 每個欄位都先轉字串，避免純數字帳號比對失敗
+  return data.slice(1)
+    .filter(r => cs(r[0]) !== '')
+    .map(r => [cs(r[0]), cs(r[1]), cs(r[2])]);
 }
 
 // ── 進度工作表（一列 = 一個孩子的一門課）──
@@ -59,8 +65,8 @@ function loadProgress(user) {
   const data  = sheet.getDataRange().getValues();
   const parts = [];
   for (let i = 1; i < data.length; i++) {
-    if (String(data[i][0]).trim() === user && data[i][2]) {
-      parts.push(String(data[i][2]));
+    if (cs(data[i][0]) === user && data[i][2]) {
+      parts.push(cs(data[i][2]));
     }
   }
   return { ok: true, watched: parts.join(',') };
@@ -82,8 +88,8 @@ function saveProgress(user, courseDataJson) {
   for (const [courseKey, watched] of Object.entries(courseData)) {
     let rowNum = -1;
     for (let i = 1; i < rows.length; i++) {
-      if (String(rows[i][0]).trim() === user &&
-          String(rows[i][1]).trim() === courseKey) {
+      if (cs(rows[i][0]) === user &&
+          cs(rows[i][1]) === courseKey) {
         rowNum = i + 1;
         rows[i][2] = watched;
         break;
@@ -110,7 +116,7 @@ function doGet(e) {
       const inputUser = String(e.parameter.user || '').trim();
       const inputPw   = String(e.parameter.pw   || '').trim();
       const match     = getAccounts().find(r =>
-        String(r[0]).trim() === inputUser && String(r[1]).trim() === inputPw
+        r[0] === inputUser && r[1] === inputPw
       );
       result = match
         ? { ok: true, user: inputUser, defaultGrade: String(match[2] || 'G8').trim() || 'G8' }
