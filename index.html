@@ -8,13 +8,16 @@
 <!--
   ════════════════════════════════════════════
   【使用說明】
-  1. 密碼：在 GAS 專案設定 → 指令碼屬性 → SITE_PW 修改（不需動這個檔案）
+  1. 密碼：帳號密碼在 Google Sheets「帳號」工作表管理（不需動這個檔案）
   2. 新增課程：在 const COURSES 區塊新增對應的 key
      格式：'G{年級}|{科目}|{上/下}'
      例如：'G8|數學|上'  → 國二數學上學期
           'G4|英語|下'  → 小四英語下學期
   3. 年級代碼：G1=小一 G2=小二 G3=小三 G4=小四 G5=小五 G6=小六
               G7=國一 G8=國二 G9=國三
+  4. 課程觀看權限：在「帳號」工作表 D欄「允許課程」設定，
+     填 * 開放全部、留空完全看不到、或填 G8 / G8|理化 / G8|理化|上
+     等規則指定部分開放（詳見 gas-password-api.gs 開頭說明）
   ════════════════════════════════════════════
 -->
 <style>
@@ -459,6 +462,104 @@ const COURSES = {
     ]
   },
 
+  // ── 國二 地理 上學期（林揚老師） ──────────────
+  'G8|地理|上': {
+    teacher: '林揚老師',
+    chapters: [
+      { id:'D1C1', title:'第一章：中國自然環境', videos:[
+        { id:'D1C1-1', title:'中國自然環境（一）：行政區與地形', url:'https://youtu.be/k7guhpyplj8', mins:59 },
+        { id:'D1C1-2', title:'中國自然環境（二）：地形',         url:'https://youtu.be/Excqr1gTmGk', mins:44 },
+      ]},
+      { id:'D1C2', title:'第二章：中國氣候與傳統生活方式', videos:[
+        { id:'D1C2-1', title:'中國氣候',       url:'https://youtu.be/GZzUEJr_4bw', mins:24 },
+        { id:'D1C2-2', title:'傳統生活方式',   url:'https://youtu.be/bjWyO6OZGOM', mins:16 },
+      ]},
+      { id:'D1C3', title:'第三章：人口與現代農業轉型', videos:[
+        { id:'D1C3-1', title:'人口',           url:'https://youtu.be/j0nFmrM-tWE', mins:25 },
+        { id:'D1C3-2', title:'現代農業轉型',   url:'https://youtu.be/ZZMTTBpB7Ik', mins:26 },
+      ]},
+      { id:'D1C4', title:'第四章：中國產業與經濟全球關聯', videos:[
+        { id:'D1C4-1', title:'中國產業與區域差異',     url:'https://youtu.be/ZKFlxqyVUmY', mins:16 },
+        { id:'D1C4-2', title:'經濟發展與全球關聯',     url:'https://youtu.be/dFFK1vvA7uE', mins:24 },
+      ]},
+      { id:'D1C5', title:'第五章：東北亞', videos:[
+        { id:'D1C5-1', title:'東北亞（一）：韓國、日本', url:'https://youtu.be/29h1ku7rzFw', mins:16 },
+        { id:'D1C5-2', title:'東北亞（二）',              url:'https://youtu.be/iYRP2klWvX0', mins:30 },
+      ]},
+      { id:'D1C6', title:'第六章：東北亞的經濟發展', videos:[
+        { id:'D1C6-1', title:'東北亞的經濟發展', url:'https://youtu.be/4uvjeLWtE_A', mins:20 },
+      ]},
+    ]
+  },
+
+  // ── 國二 公民 上學期（林揚老師） ──────────────
+  'G8|公民|上': {
+    teacher: '林揚老師',
+    chapters: [
+      { id:'M1C1', title:'第一章：國家與民主政治', videos:[
+        { id:'M1C1-1', title:'國家與民主政治', url:'https://youtu.be/Oqw_GqEjqbc', mins:21 },
+      ]},
+      { id:'M1C2', title:'第二章：法治人治、法律位階、憲法人權', videos:[
+        { id:'M1C2-1', title:'人治與法治',   url:'https://youtu.be/BCfCl7L8rkE', mins:5  },
+        { id:'M1C2-2', title:'法律位階',     url:'https://youtu.be/JxcZchzf-78', mins:18 },
+        { id:'M1C2-3', title:'憲法人權',     url:'https://youtu.be/UAPlxtxfiTo', mins:37 },
+      ]},
+      { id:'M1C3', title:'第三章：憲法人權與權力分立', videos:[
+        { id:'M1C3-1', title:'權利與權力',       url:'https://youtu.be/tg66jc_ZLfM', mins:4  },
+        { id:'M1C3-2', title:'權力分立',         url:'https://youtu.be/3PBE4l4sF90', mins:21 },
+      ]},
+      { id:'M1C4', title:'第四章：中央政府', videos:[
+        { id:'M1C4-1', title:'中央政府', url:'https://youtu.be/XKavE63RITk', mins:54 },
+      ]},
+      { id:'M1C5', title:'第五章：地方政府', videos:[
+        { id:'M1C5-1', title:'地方政府', url:'https://youtu.be/7kVTvbLmMhA', mins:36 },
+      ]},
+      { id:'M1C6', title:'第六章：政治參與與投票', videos:[
+        { id:'M1C6-1', title:'選舉',     url:'https://youtu.be/JlGOZixpcok', mins:27 },
+        { id:'M1C6-2', title:'投票類型', url:'https://youtu.be/QmyI7xW_ixA', mins:22 },
+      ]},
+    ]
+  },
+
+  // ── 國二 歷史 上學期（林揚老師） ──────────────
+  'G8|歷史|上': {
+    teacher: '林揚老師',
+    chapters: [
+      { id:'H1C1', title:'第一章：中國三代－秦漢', videos:[
+        { id:'H1C1-1', title:'中國三代－秦漢（一）', url:'https://youtu.be/E2q-9AQP5pQ', mins:61 },
+        { id:'H1C1-2', title:'中國三代－秦漢（二）', url:'https://youtu.be/WBFL0DAjU6A', mins:77 },
+        { id:'H1C1-3', title:'秦',                   url:'https://youtu.be/CEFO3zZ8dZI', mins:21 },
+        { id:'H1C1-4', title:'兩漢',                 url:'https://youtu.be/Do2aGexsWIA', mins:31 },
+      ]},
+      { id:'H1C2', title:'第二章：三國、魏晉南北朝、隋唐', videos:[
+        { id:'H1C2-1', title:'三國、魏晉南北朝、隋唐（一）', url:'https://youtu.be/qt4zAxQk3Zk', mins:40 },
+        { id:'H1C2-2', title:'隋唐（一）',                    url:'https://youtu.be/NWcKb7AejCM', mins:23 },
+        { id:'H1C2-3', title:'隋唐（二）',                    url:'https://youtu.be/0-bpnbZ-gMQ', mins:34 },
+      ]},
+      // 段考複習：每次段考範圍固定考兩個章節，複習影片獨立列出，之後有新的段考複習可依此格式增列
+      { id:'H1R12', title:'段考複習（第一、二章）', videos:[
+        { id:'H1R12-ex', title:'商周到隋唐 段考前衝刺版', url:'https://youtu.be/gXeBbu0aqNA', mins:42, isExam:true },
+      ]},
+      { id:'H1C3', title:'第三章：宋元', videos:[
+        { id:'H1C3-1', title:'宋元', url:'https://youtu.be/G9vCzDF51NE', mins:61 },
+      ]},
+      { id:'H1C4', title:'第四章：明朝、清初', videos:[
+        { id:'H1C4-1', title:'明朝、清初', url:'https://youtu.be/oAVDTn-bQ8Q', mins:62 },
+        { id:'H1C4-2', title:'明清（二）：朝貢貿易', url:'https://youtu.be/gIcl2ItHuPA', mins:6  },
+      ]},
+      { id:'H1C5', title:'第五章：清末', videos:[
+        { id:'H1C5-1', title:'清末（一）：鴉片戰爭',           url:'https://youtu.be/335POF4gdfI', mins:21 },
+        { id:'H1C5-2', title:'清末（二）：英法聯軍、自強運動', url:'https://youtu.be/3kz-1zkhkFc', mins:20 },
+        { id:'H1C5-3', title:'清末（三）：甲午戰爭、戊戌變法', url:'https://youtu.be/GTgXuUDA8Mg', mins:22 },
+        { id:'H1C5-4', title:'清末（四）：八國聯軍、庚子後新政', url:'https://youtu.be/bgDHyiE19Fo', mins:10 },
+        { id:'H1C5-5', title:'清末（五）：日俄戰爭、立憲革命', url:'https://youtu.be/VNiJtO3kTjs', mins:17 },
+      ]},
+      { id:'H1C6', title:'第六章：清末社會文化變遷', videos:[
+        { id:'H1C6-1', title:'清末社會文化變遷', url:'https://youtu.be/_o1vuNLLkOc', mins:18 },
+      ]},
+    ]
+  },
+
   // ════════════════════════════════════════════
   //  以下是尚未購買的課程預留欄位
   //  購買後將連結填入對應區塊即可
@@ -477,15 +578,31 @@ const COURSES = {
 //  以下為程式邏輯，一般不需要修改
 // ════════════════════════════════════════════
 
-const SESS_KEY = 'lms_auth';
+const SESS_KEY    = 'lms_auth';
+const ALLOWED_KEY = 'lms_allowed';
 
-let currentUser   = '';
-let currentLevel  = 'elem';
-let currentGrade  = 'G1';
-let openSubject   = null;
-let openSem       = null;
+let currentUser     = '';
+let currentLevel    = 'elem';
+let currentGrade    = 'G1';
+let openSubject     = null;
+let openSem         = null;
+let allowedPatterns = [];
 
 function watchedKey() { return 'lms_watched_' + currentUser; }
+
+// ── 課程觀看權限 ──────────────────────────────
+// allowedPatterns 內含 '*' → 全部開放；否則逐一比對前綴規則
+// 例如規則 'G8' 會開放 'G8|理化|上'；規則 'G8|理化' 會開放上下學期
+function setAllowedFromString(str) {
+  allowedPatterns = String(str || '').split(',').map(s => s.trim()).filter(Boolean);
+}
+function isAllowed(key) {
+  if (allowedPatterns.includes('*')) return true;
+  return allowedPatterns.some(p => key === p || key.startsWith(p + '|'));
+}
+function courseFor(key) {
+  return isAllowed(key) ? COURSES[key] : undefined;
+}
 
 // ── JSONP 共用呼叫 ────────────────────────────
 function callGAS(params, callback) {
@@ -534,6 +651,7 @@ function login() {
       return;
     }
     currentUser = data.user;
+    setAllowedFromString(data.allowed);
     btn.textContent = '載入進度…';
 
     // 登入成功後從雲端載入進度
@@ -544,6 +662,7 @@ function login() {
         localStorage.setItem(watchedKey(), JSON.stringify(obj));
       }
       sessionStorage.setItem(SESS_KEY, currentUser);
+      sessionStorage.setItem(ALLOWED_KEY, data.allowed || '');
       sessionStorage.setItem('lms_grade', data.defaultGrade || 'G8');
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
@@ -561,6 +680,7 @@ function showLoginError(msg) {
 
 function logout() {
   sessionStorage.removeItem(SESS_KEY);
+  sessionStorage.removeItem(ALLOWED_KEY);
   sessionStorage.removeItem('lms_grade');
   location.reload();
 }
@@ -580,6 +700,7 @@ function scheduleCloudSave() {
     // 按課程鍵分組，讓試算表每列只存一門課
     const grouped = {};
     for (const [courseKey, courseData] of Object.entries(COURSES)) {
+      if (!isAllowed(courseKey)) continue;
       const ids = courseData.chapters
         .flatMap(c => c.videos)
         .filter(v => w[v.id])
@@ -606,6 +727,7 @@ function toggleWatched(vid) {
 }
 function updateProgressBar(vid, w) {
   for (const [key, data] of Object.entries(COURSES)) {
+    if (!isAllowed(key)) continue;
     for (const ch of data.chapters) {
       if (ch.videos.some(v => v.id === vid)) {
         const all  = data.chapters.flatMap(c => c.videos);
@@ -655,8 +777,8 @@ function renderSubjects() {
     const cfg    = SUB_CFG[sub] || { icon:'📚', c:'#4a5568', bg:'#f7fafc' };
     const upKey  = `${currentGrade}|${sub}|上`;
     const dnKey  = `${currentGrade}|${sub}|下`;
-    const upData = COURSES[upKey];
-    const dnData = COURSES[dnKey];
+    const upData = courseFor(upKey);
+    const dnData = courseFor(dnKey);
 
     const badges = ['上','下'].map(sem => {
       const d   = sem === '上' ? upData : dnData;
@@ -694,7 +816,7 @@ function toggleSubject(gid, sub) {
     openSubject = null; openSem = null;
   } else {
     openSubject = sub;
-    openSem = COURSES[`${gid}|${sub}|上`] ? '上' : '下';
+    openSem = courseFor(`${gid}|${sub}|上`) ? '上' : '下';
   }
   const body  = document.getElementById(`sb-${gid}-${sub}`);
   const arrow = document.getElementById(`sa-${gid}-${sub}`);
@@ -710,8 +832,8 @@ function toggleSubject(gid, sub) {
 
 // ── BUILD SUBJECT BODY ───────────────────────
 function buildSubjectBody(gid, sub) {
-  const upData = COURSES[`${gid}|${sub}|上`];
-  const dnData = COURSES[`${gid}|${sub}|下`];
+  const upData = courseFor(`${gid}|${sub}|上`);
+  const dnData = courseFor(`${gid}|${sub}|下`);
   if (!upData && !dnData)
     return `<div class="empty-state">
       <div class="empty-icon">📭</div>
@@ -724,7 +846,7 @@ function buildSubjectBody(gid, sub) {
     { key:'下', data: dnData },
   ].filter(s => s.data);
   if (!openSem || !sems.find(s => s.key === openSem)) openSem = sems[0].key;
-  const curData = COURSES[`${gid}|${sub}|${openSem}`];
+  const curData = courseFor(`${gid}|${sub}|${openSem}`);
 
   const tabs = sems.map(s =>
     `<button class="sem-tab${s.key === openSem ? ' active' : ''}"
@@ -841,6 +963,7 @@ document.getElementById('pw').addEventListener('keydown', e => {
 const _savedUser = sessionStorage.getItem(SESS_KEY);
 if (_savedUser) {
   currentUser = _savedUser;
+  setAllowedFromString(sessionStorage.getItem(ALLOWED_KEY));
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   document.getElementById('user-label').textContent = '👤 ' + _savedUser;

@@ -8,7 +8,15 @@
  * 3. 若試算表已有舊的「進度」工作表，請先刪除再重新部署
  *
  * 【帳號管理】
- * 試算表 →「帳號」工作表 → A欄帳號、B欄密碼
+ * 試算表 →「帳號」工作表 → A欄帳號、B欄密碼、C欄預設頁面、D欄允許課程
+ *
+ * 【D欄「允許課程」填法】
+ *   - 填 *              → 開放全部課程（自己小孩的帳號請填這個）
+ *   - 留空              → 完全看不到任何課程（尚未指定權限的新帳號預設如此）
+ *   - G8                → 開放該年級全部科目、全部學期
+ *   - G8|理化           → 開放該年級該科目、上下學期都算
+ *   - G8|理化|上        → 只開放這一學期
+ *   - 多個規則用逗號分隔，例如：G8|理化,G8|數學|上
  *
  * 【進度查看】
  * 試算表 →「進度」工作表 → 每列 = 一個孩子的一門課
@@ -26,19 +34,20 @@ function getAccounts() {
   let   sheet = ss.getSheetByName('帳號');
   if (!sheet) {
     sheet = ss.insertSheet('帳號');
-    sheet.appendRow(['帳號', '密碼', '預設頁面']);
-    sheet.appendRow(['孩子一', 'child1', 'G8']);
-    sheet.appendRow(['孩子二', 'child2', 'G8']);
-    sheet.getRange('A1:C1').setFontWeight('bold');
+    sheet.appendRow(['帳號', '密碼', '預設頁面', '允許課程']);
+    sheet.appendRow(['孩子一', 'child1', 'G8', '*']);
+    sheet.appendRow(['孩子二', 'child2', 'G8', '*']);
+    sheet.getRange('A1:D1').setFontWeight('bold');
     sheet.setColumnWidth(1, 150);
     sheet.setColumnWidth(2, 150);
     sheet.setColumnWidth(3, 120);
+    sheet.setColumnWidth(4, 200);
   }
   const data = sheet.getDataRange().getValues();
   // 每個欄位都先轉字串，避免純數字帳號比對失敗
   return data.slice(1)
     .filter(r => cs(r[0]) !== '')
-    .map(r => [cs(r[0]), cs(r[1]), cs(r[2])]);
+    .map(r => [cs(r[0]), cs(r[1]), cs(r[2]), cs(r[3])]);
 }
 
 // ── 進度工作表（一列 = 一個孩子的一門課）──
@@ -119,7 +128,7 @@ function doGet(e) {
         r[0] === inputUser && r[1] === inputPw
       );
       result = match
-        ? { ok: true, user: inputUser, defaultGrade: String(match[2] || 'G8').trim() || 'G8' }
+        ? { ok: true, user: inputUser, defaultGrade: String(match[2] || 'G8').trim() || 'G8', allowed: match[3] || '' }
         : { ok: false };
 
     } else if (action === 'loadProgress') {
