@@ -216,6 +216,12 @@ header h1 { font-size: 18px; font-weight: 800; }
 }
 .ch-title { flex: 1; font-size: 13px; font-weight: 700; }
 .ch-meta  { font-size: 11px; color: #a0aec0; white-space: nowrap; }
+.ch-note {
+  padding: 8px 14px; background: #fff5f5;
+  border-bottom: 1px solid #fed7d7; font-size: 12px;
+  color: #9b2c2c; white-space: pre-line; line-height: 1.6;
+}
+.ch-note b { color: #c53030; }
 .ch-arrow { color: #cbd5e0; font-size: 11px; transition: transform .2s; }
 .ch-arrow.open { transform: rotate(180deg); }
 .chapter-videos { display: none; }
@@ -809,54 +815,64 @@ const COURSES = {
       ]},
       { id:'EM1', title:'第一單元：折線圖', videos:[
         { id:'EM1-k1', title:'小五上 折線圖', url:'https://youtu.be/ePQf3SaVTh0', mins:37 },
-        { id:'EM1-p1', title:'小五折線圖影音詳解', url:'https://youtu.be/XyD7RUmVqZM', mins:21 },
         { id:'EM1-txt', title:'類題文字詳解（共14頁）', url:'assets/answers/EM1-折線圖.html', mins:0 },
+        { id:'EM1-p1', title:'小五折線圖影音詳解', url:'https://youtu.be/XyD7RUmVqZM', mins:21 },
       ]},
-      { id:'EM2', title:'第二單元：因數與公因數', videos:[
+      { id:'EM2', title:'第二單元：因數與公因數', note:'類題8（2）簡答修改為③④\n類題8（3）簡答修改為③④', videos:[
         { id:'EM2-k1', title:'小五上 因數與公因數 知識點1', url:'https://youtu.be/B7NmNhBbwmc', mins:30 },
         { id:'EM2-k2', title:'小五上 因數與公因數 知識點2', url:'https://youtu.be/EqIreKt1lUY', mins:35 },
+        { id:'EM2-txt', title:'類題文字詳解（共9頁）', url:'assets/answers/EM2-因數與公因數.html', mins:0 },
         { id:'EM2-p1', title:'小五因數與公因數影音詳解', url:'https://youtu.be/ZbVmBOGs0ZA', mins:29 },
       ]},
       { id:'EM3', title:'第三單元：平面圖形', videos:[
         { id:'EM3-k1', title:'小五上 多邊形 知識點1', url:'https://youtu.be/bzTyXyadw4Q', mins:27 },
         { id:'EM3-k2', title:'小五上 多邊形 知識點2', url:'https://youtu.be/u21PXgCfIqE', mins:18 },
+        { id:'EM3-txt', title:'類題文字詳解（共10頁）', url:'assets/answers/EM3-平面圖形.html', mins:0 },
         { id:'EM3-p1', title:'小五多邊形影音詳解', url:'https://youtu.be/6N_xz5SbAcQ', mins:15 },
       ]},
       { id:'EM4', title:'第四單元：倍數與公倍數', videos:[
         { id:'EM4-k1', title:'小五上 倍數與公倍數 知識點1', url:'https://youtu.be/Qr198G_9pLY', mins:17 },
         { id:'EM4-k2', title:'小五上 倍數與公倍數 知識點2', url:'https://youtu.be/1h756pHsoUE', mins:39 },
+        { id:'EM4-txt', title:'類題文字詳解（共11頁）', url:'assets/answers/EM4-倍數與公倍數.html', mins:0 },
         { id:'EM4-p1', title:'小五倍數與公倍數影音詳解', url:'https://youtu.be/tYQ8eZhWvdQ', mins:33 },
       ]},
       { id:'EM5', title:'第五單元：立體形體', videos:[
         { id:'EM5-k1', title:'小五立體圖形知識點1', url:'https://youtu.be/UUJ0lhV5XAU', mins:21 },
         { id:'EM5-k2', title:'小五立體圖形知識點2', url:'https://youtu.be/0BLSFBP4XAU', mins:18 },
+        { id:'EM5-txt', title:'類題文字詳解（共10頁）', url:'assets/answers/EM5-立體形體.html', mins:0 },
       ]},
       { id:'EM6', title:'第六單元：整數四則運算', videos:[
         { id:'EM6-k1', title:'小五上 整數四則運算 知識點1', url:'https://youtu.be/eeqyYvRkaGg', mins:24 },
         { id:'EM6-k2', title:'小五上 整數四則運算 知識點2', url:'https://youtu.be/h2LftWcnzgU', mins:17 },
         { id:'EM6-k3', title:'小五上整數四則運算知識點3', url:'https://youtu.be/rReFjHAlbTY', mins:40 },
+        { id:'EM6-txt', title:'類題文字詳解（共14頁）', url:'assets/answers/EM6-整數四則運算.html', mins:0 },
         { id:'EM6-p1', title:'小五整數四則運算詳解', url:'https://youtu.be/_v975GMsGzY', mins:31 },
       ]},
-      { id:'EM7', title:'第七單元：擴、約分與加減', videos:[
+      { id:'EM7', title:'第七單元：擴、約分與加減', note:'類題7答案修改為\n❶ 乙最多；相差 1/20 捆\n❷ 丙最多；相差 4/9 捆\n❸ 丙最多；相差 1/5 捆', videos:[
         { id:'EM7-k1', title:'小五上 擴分、約分與通分知識點1', url:'https://youtu.be/2rINkl7-A-I', mins:28 },
         { id:'EM7-k2', title:'小五上 擴分、約分與通分知識點2', url:'https://youtu.be/cHZfsMf40r8', mins:27 },
         { id:'EM7-k3', title:'小五上 異分母的加減法 知識點1', url:'https://youtu.be/bhfCm1xEZl4', mins:29 },
         { id:'EM7-k4', title:'小五上 異分母的加減法 知識點2', url:'https://youtu.be/H-aAa5RHwP4', mins:20 },
+        { id:'EM7-txt1', title:'類題文字詳解・擴分約分通分（共9頁）', url:'assets/answers/EM7-擴分約分通分.html', mins:0 },
+        { id:'EM7-txt2', title:'類題文字詳解・異分母加減（共10頁）', url:'assets/answers/EM7-異分母加減.html', mins:0 },
         { id:'EM7-p1', title:'小五擴分與約分影音詳解', url:'https://youtu.be/VkFx-RJRglQ', mins:24 },
         { id:'EM7-p2', title:'小五異分母的加減詳解', url:'https://youtu.be/QtdZ6iHN3r8', mins:24 },
       ]},
-      { id:'EM8', title:'第八單元：面積', videos:[
+      { id:'EM8', title:'第八單元：面積', note:'類題6（3）① 題目少敘述「己的面積是（　　）平方公分」', videos:[
         { id:'EM8-k1', title:'小五上面積知識點1', url:'https://youtu.be/fwKKAeQvxXM', mins:26 },
         { id:'EM8-k2', title:'小五上 面積 知識點2', url:'https://youtu.be/i8Q3zQ6a-jo', mins:39 },
+        { id:'EM8-txt', title:'類題文字詳解（共17頁）', url:'assets/answers/EM8-面積.html', mins:0 },
         { id:'EM8-p1', title:'小五面積 詳解', url:'https://youtu.be/GkBRuntoOGk', mins:29 },
       ]},
-      { id:'EM9', title:'第九單元：乘以幾分之一', videos:[
+      { id:'EM9', title:'第九單元：乘以幾分之一', note:'類題5（2） 題目改為弟弟喝掉「一些」\n類題8 題目改為\n（1） 果汁有 3600 ml，開水有 2400 ml，混合後平均分成 12 瓶，每瓶有幾公升？\n（2） 咖啡液有 5250 ml，鮮奶油有 1750 ml，混合後裝成 25 杯，每杯有幾公升？', videos:[
         { id:'EM9-k1', title:'小五上 乘以幾分之1 知識點1', url:'https://youtu.be/46z-YaP621I', mins:22 },
         { id:'EM9-k2', title:'小五上 乘以幾分之1 知識點2', url:'https://youtu.be/Yvjo_lF5lCk', mins:14 },
+        { id:'EM9-txt', title:'類題文字詳解（共7頁）', url:'assets/answers/EM9-乘以幾分之一.html', mins:0 },
         { id:'EM9-p1', title:'小五乘以幾分之一 詳解', url:'https://youtu.be/FvhAR4DgWrU', mins:10 },
       ]},
       { id:'EM10', title:'第十單元：扇形', videos:[
         { id:'EM10-k1', title:'康軒版小五上：扇形', url:'https://youtu.be/F52ftLcwLk0', mins:19 },
+        { id:'EM10-txt', title:'類題文字詳解（共9頁）', url:'assets/answers/EM10-扇形.html', mins:0 },
         { id:'EM10-p1', title:'小五扇形詳解', url:'https://youtu.be/99M6J3s2ktI', mins:6 },
       ]},
     ]
@@ -1207,6 +1223,7 @@ function buildSemContent(gid, sub, sem, data) {
         <input type="checkbox" class="v-check" title="標記已看"
                ${w[v.id]?'checked':''} onchange="toggleWatched('${v.id}')">
       </div>`).join('');
+    const noteHtml = ch.note ? `<div class="ch-note">⚠️ <b>講義勘誤</b>\n${ch.note}</div>` : '';
     return `
       <div class="chapter-block">
         <div class="chapter-hdr" onclick="toggleCh(this)">
@@ -1215,7 +1232,7 @@ function buildSemContent(gid, sub, sem, data) {
           <span class="ch-meta">${ch.videos.length}支 · ${fmtMins(totalMins)}${wCnt?` · ✓${wCnt}`:''}</span>
           <span class="ch-arrow open">▼</span>
         </div>
-        <div class="chapter-videos open">${videos}</div>
+        <div class="chapter-videos open">${noteHtml}${videos}</div>
       </div>`;
   }).join('');
 
