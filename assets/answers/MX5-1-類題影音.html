@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>類題影音詳解｜5-1</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, 'Helvetica Neue', 'Noto Sans TC', sans-serif;
+  background: #fff; color: #1a202c;
+}
+header {
+  background: linear-gradient(135deg, #1a365d, #2b6cb0);
+  color: #fff; padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 10;
+}
+header h1 { font-size: 16px; font-weight: 800; }
+.back-btn {
+  background: rgba(255,255,255,.18); color: #fff;
+  border: 1px solid rgba(255,255,255,.4);
+  padding: 6px 14px; border-radius: 8px;
+  text-decoration: none; font-size: 13px;
+}
+.wrap { max-width: 860px; margin: 0 auto; padding: 16px; }
+.tabs {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding-bottom: 14px; margin-bottom: 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.tab {
+  padding: 6px 13px; border-radius: 8px;
+  border: 1px solid #cbd5e0; background: #f7fafc;
+  color: #4a5568; font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: inherit; white-space: nowrap;
+}
+.tab.active { background: #2b6cb0; color: #fff; border-color: #2b6cb0; }
+.tab:hover:not(.active) { border-color: #2b6cb0; color: #2b6cb0; }
+.player {
+  position: relative; width: 100%; padding-top: 56.25%;
+  background: #000; border-radius: 12px; overflow: hidden;
+}
+.player iframe { position: absolute; top:0; left:0; width: 100%; height: 100%; border: none; }
+.now-title { font-size: 13px; color: #718096; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>▶ 類題影音詳解・5-1</h1>
+  <a class="back-btn" href="../../index.html">← 回課程</a>
+</header>
+<div class="wrap">
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-i="0">類題1詳解</button>
+    <button class="tab" data-i="1">類題2詳解</button>
+    <button class="tab" data-i="2">類題3詳解</button>
+    <button class="tab" data-i="3">類題4詳解</button>
+    <button class="tab" data-i="4">類題5詳解</button>
+    <button class="tab" data-i="5">類題6詳解</button>
+    <button class="tab" data-i="6">類題7詳解</button>
+    <button class="tab" data-i="7">類題8詳解</button>
+    <button class="tab" data-i="8">類題9詳解</button>
+  </div>
+  <p class="now-title" id="nowTitle">類題1詳解</p>
+  <div class="player"><iframe id="frame" src="https://www.youtube.com/embed/_qTIWNeigEE" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe></div>
+</div>
+<script>
+const items = [{"title": "類題1詳解", "embed": "https://www.youtube.com/embed/_qTIWNeigEE"}, {"title": "類題2詳解", "embed": "https://www.youtube.com/embed/2pIbJYyoxnU"}, {"title": "類題3詳解", "embed": "https://www.youtube.com/embed/2gqsL894HDI"}, {"title": "類題4詳解", "embed": "https://www.youtube.com/embed/Tx_iw50CE7s"}, {"title": "類題5詳解", "embed": "https://www.youtube.com/embed/DlcQk3oNgeE"}, {"title": "類題6詳解", "embed": "https://www.youtube.com/embed/WE6OVXVLIO0"}, {"title": "類題7詳解", "embed": "https://www.youtube.com/embed/du2LP24cWQg"}, {"title": "類題8詳解", "embed": "https://www.youtube.com/embed/w86yMqTKA7U"}, {"title": "類題9詳解", "embed": "https://www.youtube.com/embed/NXmDiseJSV4"}];
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const i = +btn.dataset.i;
+    document.getElementById('frame').src = items[i].embed;
+    document.getElementById('nowTitle').textContent = items[i].title;
+  });
+});
+</script>
+</body>
+</html>
