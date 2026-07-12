@@ -107,11 +107,44 @@ header h1 { font-size: 18px; font-weight: 800; }
 .grade-btn.active { background: #2b6cb0; border-color: #2b6cb0; color: #fff; }
 
 /* ── MAIN CONTENT ── */
-.main-content { max-width: 980px; margin: 0 auto; padding: 20px 16px 48px; }
+.main-content { max-width: 980px; margin: 0 auto; padding: 20px 16px 48px; transition: max-width .2s; }
+.main-content.theater-mode { max-width: 1360px; }
 .section-title {
   font-size: 15px; font-weight: 700; color: #4a5568;
   margin-bottom: 14px; padding-left: 4px;
 }
+
+/* ── CONTENT SPLIT (nav + theater) ── */
+.content-split { display: flex; gap: 20px; align-items: flex-start; }
+.content-split .subject-grid { flex: 1; }
+.content-split.is-theater .subject-grid {
+  flex: 0 0 360px; max-width: 360px;
+  grid-template-columns: 1fr;
+}
+.theater-wrap {
+  display: none; flex: 1; min-width: 0;
+  position: sticky; top: 78px;
+}
+.theater-wrap.active { display: block; }
+.theater-panel {
+  position: relative; width: 100%; padding-top: 56.25%;
+  background: #000; border-radius: 14px; overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0,0,0,.18);
+}
+.theater-panel.is-pdf { padding-top: 130%; background: #f7fafc; }
+.theater-panel iframe {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+}
+.theater-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.theater-title { font-size: 14px; font-weight: 700; color: #2d3748; }
+.theater-close {
+  background: #edf2f7; border: none; border-radius: 7px;
+  padding: 5px 12px; font-size: 12px; color: #4a5568; cursor: pointer;
+}
+.theater-close:hover { background: #e2e8f0; }
 
 /* ── SUBJECT GRID ── */
 .subject-grid {
@@ -255,19 +288,8 @@ header h1 { font-size: 18px; font-weight: 800; }
   accent-color: #38a169; flex-shrink: 0;
 }
 
-/* ── INLINE EMBED PLAYER ── */
-.v-embed {
-  padding: 0 14px 14px;
-  border-bottom: 1px solid #f0f4f8;
-}
-.v-embed-frame {
-  position: relative; width: 100%; padding-top: 56.25%;
-  background: #000; border-radius: 8px; overflow: hidden;
-}
-.v-embed-frame iframe {
-  position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
-}
-.v-embed-frame.is-pdf { padding-top: 130%; background: #f7fafc; }
+.v-btn.playing { background: #38a169; }
+.v-btn.playing:hover { background: #2f855a; }
 
 /* ── EMPTY STATE ── */
 .empty-state {
@@ -282,6 +304,15 @@ header h1 { font-size: 18px; font-weight: 800; }
   .v-num { display: none; }
   header h1 { font-size: 15px; }
   .level-tab { padding: 12px 16px; font-size: 14px; }
+}
+
+@media (max-width: 860px) {
+  .content-split { flex-direction: column; }
+  .content-split.is-theater .subject-grid {
+    flex: 1 1 auto; max-width: none;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  }
+  .theater-wrap { position: static; }
 }
 </style>
 </head>
@@ -323,9 +354,18 @@ header h1 { font-size: 18px; font-weight: 800; }
 
   <div class="grade-bar" id="grade-bar"></div>
 
-  <div class="main-content">
+  <div class="main-content" id="main-content">
     <p class="section-title" id="section-title"></p>
-    <div class="subject-grid" id="subject-grid"></div>
+    <div class="content-split" id="content-split">
+      <div class="subject-grid" id="subject-grid"></div>
+      <div class="theater-wrap" id="theater-wrap">
+        <div class="theater-head">
+          <span class="theater-title" id="theater-title"></span>
+          <button class="theater-close" onclick="closeTheater()">✕ 關閉播放</button>
+        </div>
+        <div class="theater-panel" id="theater-panel"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1057,16 +1097,52 @@ function scheduleCloudSave() {
   }, 2500);
 }
 
-// ── INLINE EMBED PLAYER ──────────────────────
-function toggleEmbed(vid, url) {
-  const wrap  = document.getElementById('ve-' + vid);
-  const frame = document.getElementById('vef-' + vid);
-  const open  = wrap.style.display !== 'none';
-  if (open) { wrap.style.display = 'none'; return; }
-  if (!frame.querySelector('iframe')) {
-    frame.innerHTML = `<iframe src="${url}" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>`;
+// ── THEATER (SIDE) EMBED PLAYER ──────────────
+let currentTheaterVid = null;
+
+function toggleEmbed(vid, url, title, isPdf) {
+  if (currentTheaterVid === vid) { closeTheater(); return; }
+
+  const split = document.getElementById('content-split');
+  const main  = document.getElementById('main-content');
+  const wrap  = document.getElementById('theater-wrap');
+  const panel = document.getElementById('theater-panel');
+  const label = document.getElementById('theater-title');
+
+  split.classList.add('is-theater');
+  main.classList.add('theater-mode');
+  wrap.classList.add('active');
+  panel.classList.toggle('is-pdf', !!isPdf);
+  panel.innerHTML = `<iframe src="${url}" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>`;
+  label.textContent = title || '';
+
+  if (currentTheaterVid) {
+    const prevBtn = document.getElementById('vb-' + currentTheaterVid);
+    if (prevBtn) prevBtn.classList.remove('playing');
   }
-  wrap.style.display = 'block';
+  currentTheaterVid = vid;
+  const btn = document.getElementById('vb-' + vid);
+  if (btn) btn.classList.add('playing');
+
+  wrap.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function closeTheater() {
+  const split = document.getElementById('content-split');
+  const main  = document.getElementById('main-content');
+  const wrap  = document.getElementById('theater-wrap');
+  const panel = document.getElementById('theater-panel');
+
+  split.classList.remove('is-theater');
+  main.classList.remove('theater-mode');
+  wrap.classList.remove('active');
+  panel.innerHTML = '';
+
+  if (currentTheaterVid) {
+    const btn = document.getElementById('vb-' + currentTheaterVid);
+    if (btn) btn.classList.remove('playing');
+  }
+  currentTheaterVid = null;
 }
 
 function toggleWatched(vid) {
@@ -1098,6 +1174,7 @@ function updateProgressBar(vid, w) {
 
 // ── LEVEL / GRADE ────────────────────────────
 function setLevel(lv) {
+  closeTheater();
   currentLevel = lv; openSubject = null; openSem = null;
   document.getElementById('tab-elem').classList.toggle('active',  lv === 'elem');
   document.getElementById('tab-jh').classList.toggle('active',    lv === 'jh');
@@ -1108,6 +1185,7 @@ function setLevel(lv) {
   renderSubjects();
 }
 function setGrade(gid) {
+  closeTheater();
   currentGrade = gid; openSubject = null; openSem = null;
   document.querySelectorAll('.grade-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.gid === gid));
@@ -1167,6 +1245,7 @@ function renderSubjects() {
 
 // ── TOGGLE SUBJECT ───────────────────────────
 function toggleSubject(gid, sub) {
+  closeTheater();
   if (openSubject === sub) {
     openSubject = null; openSem = null;
   } else {
@@ -1213,6 +1292,7 @@ function buildSubjectBody(gid, sub) {
 
 // ── SET SEMESTER ─────────────────────────────
 function setSem(gid, sub, sem) {
+  closeTheater();
   openSem = sem;
   const body = document.getElementById(`sb-${gid}-${sub}`);
   if (body) body.innerHTML = buildSubjectBody(gid, sub);
@@ -1252,14 +1332,10 @@ function buildSemContent(gid, sub, sem, data) {
     const wCnt      = ch.videos.filter(v=>w[v.id]).length;
     const videos    = ch.videos.map(v => {
       const playBtn = v.embed
-        ? `<button type="button" class="v-btn${v.isExam?' exam-btn':''}"
-                   onclick="toggleEmbed('${v.id}','${v.url}')">${v.isPdf ? '📄 開啟' : '▶ 播放'}</button>`
+        ? `<button type="button" class="v-btn${v.isExam?' exam-btn':''}" id="vb-${v.id}"
+                   onclick="toggleEmbed('${v.id}','${v.url}','${(v.title||'').replace(/'/g,"\\'")}',${!!v.isPdf})">${v.isPdf ? '📄 開啟' : '▶ 播放'}</button>`
         : `<a href="${v.url}" target="_blank"
               class="v-btn${v.isExam?' exam-btn':''}">▶ 觀看</a>`;
-      const embedHtml = v.embed ? `
-      <div class="v-embed" id="ve-${v.id}" style="display:none">
-        <div class="v-embed-frame${v.isPdf?' is-pdf':''}" id="vef-${v.id}"></div>
-      </div>` : '';
       return `
       <div class="video-row${w[v.id]?' watched':''}" id="vr-${v.id}">
         <span class="v-num">${v.id}</span>
@@ -1270,7 +1346,7 @@ function buildSemContent(gid, sub, sem, data) {
         ${playBtn}
         <input type="checkbox" class="v-check" title="標記已看"
                ${w[v.id]?'checked':''} onchange="toggleWatched('${v.id}')">
-      </div>${embedHtml}`;
+      </div>`;
     }).join('');
     const noteHtml = ch.note ? `<div class="ch-note">⚠️ <b>講義勘誤</b>\n${ch.note}</div>` : '';
     return `
