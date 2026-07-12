@@ -133,6 +133,11 @@ header h1 { font-size: 18px; font-weight: 800; }
 }
 .theater-panel.is-pdf { padding-top: 130%; background: #f7fafc; }
 .theater-panel.is-page { padding-top: 0; height: 80vh; background: #f0f4f8; }
+.theater-panel.is-text {
+  padding-top: 0; height: auto; background: #fff;
+  padding: 24px; font-size: 14px; line-height: 1.9; color: #2d3748;
+  white-space: pre-line;
+}
 .theater-panel iframe {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
 }
@@ -250,12 +255,6 @@ header h1 { font-size: 18px; font-weight: 800; }
 }
 .ch-title { flex: 1; font-size: 13px; font-weight: 700; }
 .ch-meta  { font-size: 11px; color: #a0aec0; white-space: nowrap; }
-.ch-note {
-  padding: 8px 14px; background: #fff5f5;
-  border-bottom: 1px solid #fed7d7; font-size: 12px;
-  color: #9b2c2c; white-space: pre-line; line-height: 1.6;
-}
-.ch-note b { color: #c53030; }
 .ch-arrow { color: #cbd5e0; font-size: 11px; transition: transform .2s; }
 .ch-arrow.open { transform: rotate(180deg); }
 .chapter-videos { display: none; }
@@ -627,6 +626,9 @@ const COURSES = {
   'G8|數學|上': {
     teacher: '鄧強老師',
     chapters: [
+      { id:'MX-ERR1', title:'第一次段考 講義勘誤', videos:[
+        { id:'MX-ERR1-1', title:'＊講義勘誤', noteText:'1-3\n・知識點1範例3(4)簡答修正為 64x²-80x+25\n・知識點1範例9簡答修正為C\n\n2-1\n・類題15題目改為「利用範例15的表」', mins:0 },
+      ]},
       { id:'MX1-1', title:'第1節：1-1 乘法公式', videos:[
         { id:'MX1-1-k1', title:'知識點1', url:'https://youtu.be/i9T-sAozHdE', mins:51 },
         { id:'MX1-1-k2', title:'知識點2', url:'https://youtu.be/BZ2IkxJ2hHE', mins:49 },
@@ -709,6 +711,9 @@ const COURSES = {
         { id:'MX2-1-p15', title:'類題15詳解', url:'https://youtu.be/Xz8ffJPBZBw', mins:1 },
         { id:'MX2-1-p16', title:'類題16詳解', url:'https://youtu.be/yTyeoeP2vzw', mins:1 },
         { id:'MX2-1-ex', title:'段考急救包 2-1', url:'https://youtu.be/zkA9S5tlZPw', mins:29, isExam:true },
+      ]},
+      { id:'MX-ERR2', title:'第二次段考 講義勘誤', videos:[
+        { id:'MX-ERR2-1', title:'＊講義勘誤', noteText:'2-3\n・類題4(2)需補上單位平方公分', mins:0 },
       ]},
       { id:'MX2-2', title:'第5節：2-2 根式的運算', videos:[
         { id:'MX2-2-k1', title:'知識點1', url:'https://youtu.be/XzrJDW-u1r4', mins:48 },
@@ -875,7 +880,8 @@ const COURSES = {
         { id:'EM1-txt', title:'類題文字詳解（共14頁）', url:'assets/answers/EM1-折線圖.html', mins:0 },
         { id:'EM1-p1', title:'小五折線圖影音詳解', url:'https://youtu.be/XyD7RUmVqZM', mins:21 },
       ]},
-      { id:'EM2', title:'第二單元：因數與公因數', note:'類題8（2）簡答修改為③④\n類題8（3）簡答修改為③④', videos:[
+      { id:'EM2', title:'第二單元：因數與公因數', videos:[
+        { id:'EM2-err', title:'＊講義勘誤', noteText:'類題8（2）簡答修改為③④\n類題8（3）簡答修改為③④', mins:0 },
         { id:'EM2-k1', title:'小五上 因數與公因數 知識點1', url:'https://youtu.be/B7NmNhBbwmc', mins:30 },
         { id:'EM2-k2', title:'小五上 因數與公因數 知識點2', url:'https://youtu.be/EqIreKt1lUY', mins:35 },
         { id:'EM2-txt', title:'類題文字詳解（共9頁）', url:'assets/answers/EM2-因數與公因數.html', mins:0 },
@@ -905,7 +911,8 @@ const COURSES = {
         { id:'EM6-txt', title:'類題文字詳解（共14頁）', url:'assets/answers/EM6-整數四則運算.html', mins:0 },
         { id:'EM6-p1', title:'小五整數四則運算詳解', url:'https://youtu.be/_v975GMsGzY', mins:31 },
       ]},
-      { id:'EM7', title:'第七單元：擴、約分與加減', note:'類題7答案修改為\n❶ 乙最多；相差 1/20 捆\n❷ 丙最多；相差 4/9 捆\n❸ 丙最多；相差 1/5 捆', videos:[
+      { id:'EM7', title:'第七單元：擴、約分與加減', videos:[
+        { id:'EM7-err', title:'＊講義勘誤', noteText:'類題7答案修改為\n❶ 乙最多；相差 1/20 捆\n❷ 丙最多；相差 4/9 捆\n❸ 丙最多；相差 1/5 捆', mins:0 },
         { id:'EM7-k1', title:'小五上 擴分、約分與通分知識點1', url:'https://youtu.be/2rINkl7-A-I', mins:28 },
         { id:'EM7-k2', title:'小五上 擴分、約分與通分知識點2', url:'https://youtu.be/cHZfsMf40r8', mins:27 },
         { id:'EM7-k3', title:'小五上 異分母的加減法 知識點1', url:'https://youtu.be/bhfCm1xEZl4', mins:29 },
@@ -915,13 +922,15 @@ const COURSES = {
         { id:'EM7-p1', title:'小五擴分與約分影音詳解', url:'https://youtu.be/VkFx-RJRglQ', mins:24 },
         { id:'EM7-p2', title:'小五異分母的加減詳解', url:'https://youtu.be/QtdZ6iHN3r8', mins:24 },
       ]},
-      { id:'EM8', title:'第八單元：面積', note:'類題6（3）① 題目少敘述「己的面積是（　　）平方公分」', videos:[
+      { id:'EM8', title:'第八單元：面積', videos:[
+        { id:'EM8-err', title:'＊講義勘誤', noteText:'類題6（3）① 題目少敘述「己的面積是（　　）平方公分」', mins:0 },
         { id:'EM8-k1', title:'小五上面積知識點1', url:'https://youtu.be/fwKKAeQvxXM', mins:26 },
         { id:'EM8-k2', title:'小五上 面積 知識點2', url:'https://youtu.be/i8Q3zQ6a-jo', mins:39 },
         { id:'EM8-txt', title:'類題文字詳解（共17頁）', url:'assets/answers/EM8-面積.html', mins:0 },
         { id:'EM8-p1', title:'小五面積 詳解', url:'https://youtu.be/GkBRuntoOGk', mins:29 },
       ]},
-      { id:'EM9', title:'第九單元：乘以幾分之一', note:'類題5（2） 題目改為弟弟喝掉「一些」\n類題8 題目改為\n（1） 果汁有 3600 ml，開水有 2400 ml，混合後平均分成 12 瓶，每瓶有幾公升？\n（2） 咖啡液有 5250 ml，鮮奶油有 1750 ml，混合後裝成 25 杯，每杯有幾公升？', videos:[
+      { id:'EM9', title:'第九單元：乘以幾分之一', videos:[
+        { id:'EM9-err', title:'＊講義勘誤', noteText:'類題5（2） 題目改為弟弟喝掉「一些」\n類題8 題目改為\n（1） 果汁有 3600 ml，開水有 2400 ml，混合後平均分成 12 瓶，每瓶有幾公升？\n（2） 咖啡液有 5250 ml，鮮奶油有 1750 ml，混合後裝成 25 杯，每杯有幾公升？', mins:0 },
         { id:'EM9-k1', title:'小五上 乘以幾分之1 知識點1', url:'https://youtu.be/46z-YaP621I', mins:22 },
         { id:'EM9-k2', title:'小五上 乘以幾分之1 知識點2', url:'https://youtu.be/Yvjo_lF5lCk', mins:14 },
         { id:'EM9-txt', title:'類題文字詳解（共7頁）', url:'assets/answers/EM9-乘以幾分之一.html', mins:0 },
@@ -1112,9 +1121,7 @@ function scheduleCloudSave() {
 // ── THEATER (SIDE) EMBED PLAYER ──────────────
 let currentTheaterVid = null;
 
-function toggleEmbed(vid, url, title, kind) {
-  if (currentTheaterVid === vid) { closeTheater(); return; }
-
+function openTheaterPanel(vid, title, kind) {
   const split = document.getElementById('content-split');
   const main  = document.getElementById('main-content');
   const wrap  = document.getElementById('theater-wrap');
@@ -1124,9 +1131,8 @@ function toggleEmbed(vid, url, title, kind) {
   split.classList.add('is-theater');
   main.classList.add('theater-mode');
   wrap.classList.add('active');
-  panel.classList.remove('is-pdf', 'is-page');
-  if (kind === 'pdf' || kind === 'page') panel.classList.add('is-' + kind);
-  panel.innerHTML = `<iframe src="${url}" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>`;
+  panel.classList.remove('is-pdf', 'is-page', 'is-text');
+  if (kind) panel.classList.add('is-' + kind);
   label.textContent = title || '';
 
   if (currentTheaterVid) {
@@ -1138,6 +1144,19 @@ function toggleEmbed(vid, url, title, kind) {
   if (btn) btn.classList.add('playing');
 
   wrap.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  return panel;
+}
+
+function toggleEmbed(vid, url, title, kind) {
+  if (currentTheaterVid === vid) { closeTheater(); return; }
+  const panel = openTheaterPanel(vid, title, kind === 'pdf' || kind === 'page' ? kind : null);
+  panel.innerHTML = `<iframe src="${url}" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>`;
+}
+
+function toggleNote(vid, title, content) {
+  if (currentTheaterVid === vid) { closeTheater(); return; }
+  const panel = openTheaterPanel(vid, title, 'text');
+  panel.textContent = content;
 }
 
 function closeTheater() {
@@ -1355,14 +1374,22 @@ function buildSemContent(gid, sub, sem, data) {
     const totalMins = ch.videos.reduce((s,v)=>s+v.mins,0);
     const wCnt      = ch.videos.filter(v=>w[v.id]).length;
     const videos    = ch.videos.map(v => {
-      const embedUrl  = v.embed === false ? null : toEmbedUrl(v.url);
-      const embedKind = embedUrl && embedUrl.startsWith('assets/') ? 'page' : (v.isPdf ? 'pdf' : 'video');
-      const isDoc     = embedKind === 'pdf' || embedKind === 'page';
-      const playBtn = embedUrl
-        ? `<button type="button" class="v-btn${v.isExam?' exam-btn':''}" id="vb-${v.id}"
-                   onclick="toggleEmbed('${v.id}','${embedUrl}','${(v.title||'').replace(/'/g,"\\'")}','${embedKind}')">${isDoc ? '📄 開啟' : '▶ 播放'}</button>`
-        : `<a href="${v.url}" target="_blank"
-              class="v-btn${v.isExam?' exam-btn':''}">▶ 觀看</a>`;
+      const escTitle  = (v.title||'').replace(/'/g,"\\'");
+      let playBtn;
+      if (v.noteText) {
+        const escNote = v.noteText.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n');
+        playBtn = `<button type="button" class="v-btn" id="vb-${v.id}"
+                     onclick="toggleNote('${v.id}','${escTitle}','${escNote}')">📋 查看</button>`;
+      } else {
+        const embedUrl  = v.embed === false ? null : toEmbedUrl(v.url);
+        const embedKind = embedUrl && embedUrl.startsWith('assets/') ? 'page' : (v.isPdf ? 'pdf' : 'video');
+        const isDoc     = embedKind === 'pdf' || embedKind === 'page';
+        playBtn = embedUrl
+          ? `<button type="button" class="v-btn${v.isExam?' exam-btn':''}" id="vb-${v.id}"
+                     onclick="toggleEmbed('${v.id}','${embedUrl}','${escTitle}','${embedKind}')">${isDoc ? '📄 開啟' : '▶ 播放'}</button>`
+          : `<a href="${v.url}" target="_blank"
+                class="v-btn${v.isExam?' exam-btn':''}">▶ 觀看</a>`;
+      }
       return `
       <div class="video-row${w[v.id]?' watched':''}" id="vr-${v.id}">
         <span class="v-num">${v.id}</span>
@@ -1375,7 +1402,6 @@ function buildSemContent(gid, sub, sem, data) {
                ${w[v.id]?'checked':''} onchange="toggleWatched('${v.id}')">
       </div>`;
     }).join('');
-    const noteHtml = ch.note ? `<div class="ch-note">⚠️ <b>講義勘誤</b>\n${ch.note}</div>` : '';
     return `
       <div class="chapter-block">
         <div class="chapter-hdr" onclick="toggleCh(this)">
@@ -1384,7 +1410,7 @@ function buildSemContent(gid, sub, sem, data) {
           <span class="ch-meta">${ch.videos.length}支 · ${fmtMins(totalMins)}${wCnt?` · ✓${wCnt}`:''}</span>
           <span class="ch-arrow open">▼</span>
         </div>
-        <div class="chapter-videos open">${noteHtml}${videos}</div>
+        <div class="chapter-videos open">${videos}</div>
       </div>`;
   }).join('');
 
