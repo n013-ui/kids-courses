@@ -1226,13 +1226,19 @@ function renderSubjects() {
     const upData = courseFor(upKey);
     const dnData = courseFor(dnKey);
 
-    const badges = ['上','下'].map(sem => {
-      const d   = sem === '上' ? upData : dnData;
-      const cnt = d ? d.chapters.reduce((s,c) => s + c.videos.length, 0) : 0;
-      return `<span class="sem-badge ${d ? 'has' : 'none'}">
-        ${sem}學期${d ? ` · ${cnt}支` : ''}
-      </span>`;
-    }).join('');
+    const badges = currentGrade === 'X1'
+      ? (() => {
+          const d   = upData || dnData;
+          const cnt = d ? d.chapters.reduce((s,c) => s + c.videos.length, 0) : 0;
+          return `<span class="sem-badge ${d ? 'has' : 'none'}">${d ? `共 ${cnt} 支` : '尚未加入'}</span>`;
+        })()
+      : ['上','下'].map(sem => {
+          const d   = sem === '上' ? upData : dnData;
+          const cnt = d ? d.chapters.reduce((s,c) => s + c.videos.length, 0) : 0;
+          return `<span class="sem-badge ${d ? 'has' : 'none'}">
+            ${sem}學期${d ? ` · ${cnt}支` : ''}
+          </span>`;
+        }).join('');
 
     const isOpen = openSubject === sub;
     return `
@@ -1287,6 +1293,11 @@ function buildSubjectBody(gid, sub) {
       <p>尚未加入課程</p>
       <p class="hint">購買課程後請告知家長新增</p>
     </div>`;
+
+  // 不分年級的加映課程：不分學期，直接顯示內容，不出現學期分頁
+  if (gid === 'X1') {
+    return buildSemContent(gid, sub, '上', upData || dnData);
+  }
 
   const sems = [
     { key:'上', data: upData },
