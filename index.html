@@ -255,6 +255,20 @@ header h1 { font-size: 18px; font-weight: 800; }
   accent-color: #38a169; flex-shrink: 0;
 }
 
+/* ── INLINE EMBED PLAYER ── */
+.v-embed {
+  padding: 0 14px 14px;
+  border-bottom: 1px solid #f0f4f8;
+}
+.v-embed-frame {
+  position: relative; width: 100%; padding-top: 56.25%;
+  background: #000; border-radius: 8px; overflow: hidden;
+}
+.v-embed-frame iframe {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+}
+.v-embed-frame.is-pdf { padding-top: 130%; background: #f7fafc; }
+
 /* ── EMPTY STATE ── */
 .empty-state {
   padding: 36px 20px; text-align: center; color: #a0aec0;
@@ -302,8 +316,9 @@ header h1 { font-size: 18px; font-weight: 800; }
   </header>
 
   <div class="level-tabs">
-    <button class="level-tab active" id="tab-elem" onclick="setLevel('elem')">🏫 國小課程</button>
-    <button class="level-tab"        id="tab-jh"   onclick="setLevel('jh')">🏫 國中課程</button>
+    <button class="level-tab active" id="tab-elem"  onclick="setLevel('elem')">🏫 國小課程</button>
+    <button class="level-tab"        id="tab-jh"    onclick="setLevel('jh')">🏫 國中課程</button>
+    <button class="level-tab"        id="tab-extra" onclick="setLevel('extra')">📖 加映課程</button>
   </div>
 
   <div class="grade-bar" id="grade-bar"></div>
@@ -341,6 +356,7 @@ const GRADES = [
   { id:'G7', label:'國一', full:'國中一年級', level:'jh',   subs:['國文','數學','英語','生物','歷史','地理','公民'] },
   { id:'G8', label:'國二', full:'國中二年級', level:'jh',   subs:['國文','數學','英語','理化','地球科學','歷史','地理','公民'] },
   { id:'G9', label:'國三', full:'國中三年級', level:'jh',   subs:['國文','數學','英語','理化','地球科學','歷史','地理','公民'] },
+  { id:'X1', label:'不分年級', full:'不分年級加映課程', level:'extra', subs:['國文'] },
 ];
 
 // ════════════════════════════════════════════
@@ -878,6 +894,15 @@ const COURSES = {
     ]
   },
 
+  // ── 不分年級・文言文應試課（自製課程） ────────
+  'X1|國文|上': {
+    chapters: [
+      { id:'WYW1', title:'第一課', videos:[
+        { id:'WYW1-1', title:'第一課 教學影片', url:'https://drive.google.com/file/d/1QjbzCMxDhnQimsudu_atgyqsQwa-k2rU/preview', mins:10, embed:true },
+      ]},
+    ]
+  },
+
   // ════════════════════════════════════════════
   //  以下是尚未購買的課程預留欄位
   //  購買後將連結填入對應區塊即可
@@ -1032,6 +1057,18 @@ function scheduleCloudSave() {
   }, 2500);
 }
 
+// ── INLINE EMBED PLAYER ──────────────────────
+function toggleEmbed(vid, url) {
+  const wrap  = document.getElementById('ve-' + vid);
+  const frame = document.getElementById('vef-' + vid);
+  const open  = wrap.style.display !== 'none';
+  if (open) { wrap.style.display = 'none'; return; }
+  if (!frame.querySelector('iframe')) {
+    frame.innerHTML = `<iframe src="${url}" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>`;
+  }
+  wrap.style.display = 'block';
+}
+
 function toggleWatched(vid) {
   const w = getWatched();
   w[vid] = !w[vid];
@@ -1062,9 +1099,11 @@ function updateProgressBar(vid, w) {
 // ── LEVEL / GRADE ────────────────────────────
 function setLevel(lv) {
   currentLevel = lv; openSubject = null; openSem = null;
-  document.getElementById('tab-elem').classList.toggle('active', lv === 'elem');
-  document.getElementById('tab-jh').classList.toggle('active',   lv === 'jh');
+  document.getElementById('tab-elem').classList.toggle('active',  lv === 'elem');
+  document.getElementById('tab-jh').classList.toggle('active',    lv === 'jh');
+  document.getElementById('tab-extra').classList.toggle('active', lv === 'extra');
   currentGrade = GRADES.find(g => g.level === lv).id;
+  document.getElementById('grade-bar').style.display = lv === 'extra' ? 'none' : '';
   renderGrades();
   renderSubjects();
 }
@@ -1211,18 +1250,28 @@ function buildSemContent(gid, sub, sem, data) {
   const chapters = data.chapters.map(ch => {
     const totalMins = ch.videos.reduce((s,v)=>s+v.mins,0);
     const wCnt      = ch.videos.filter(v=>w[v.id]).length;
-    const videos    = ch.videos.map(v => `
+    const videos    = ch.videos.map(v => {
+      const playBtn = v.embed
+        ? `<button type="button" class="v-btn${v.isExam?' exam-btn':''}"
+                   onclick="toggleEmbed('${v.id}','${v.url}')">${v.isPdf ? '📄 開啟' : '▶ 播放'}</button>`
+        : `<a href="${v.url}" target="_blank"
+              class="v-btn${v.isExam?' exam-btn':''}">▶ 觀看</a>`;
+      const embedHtml = v.embed ? `
+      <div class="v-embed" id="ve-${v.id}" style="display:none">
+        <div class="v-embed-frame${v.isPdf?' is-pdf':''}" id="vef-${v.id}"></div>
+      </div>` : '';
+      return `
       <div class="video-row${w[v.id]?' watched':''}" id="vr-${v.id}">
         <span class="v-num">${v.id}</span>
         <span class="v-title${v.isExam?' exam':''}">
           ${v.isExam ? '📝 ' : ''}${v.title}
         </span>
         <span class="v-dur">${fmtMins(v.mins)}</span>
-        <a href="${v.url}" target="_blank"
-           class="v-btn${v.isExam?' exam-btn':''}">▶ 觀看</a>
+        ${playBtn}
         <input type="checkbox" class="v-check" title="標記已看"
                ${w[v.id]?'checked':''} onchange="toggleWatched('${v.id}')">
-      </div>`).join('');
+      </div>${embedHtml}`;
+    }).join('');
     const noteHtml = ch.note ? `<div class="ch-note">⚠️ <b>講義勘誤</b>\n${ch.note}</div>` : '';
     return `
       <div class="chapter-block">
