@@ -274,6 +274,7 @@ header h1 { font-size: 18px; font-weight: 800; }
 .v-num   { font-size: 10px; color: #a0aec0; font-weight: 700; min-width: 72px; font-family: monospace; }
 .v-title { flex: 1; font-size: 13px; line-height: 1.4; }
 .v-title.exam { color: #b45309; font-weight: 700; }
+.v-title.quiz { color: #22543d; font-weight: 700; }
 .v-dur   { font-size: 11px; color: #a0aec0; white-space: nowrap; min-width: 36px; text-align: right; }
 .v-btn {
   padding: 6px 11px; border-radius: 7px;
@@ -284,6 +285,8 @@ header h1 { font-size: 18px; font-weight: 800; }
 .v-btn:hover   { background: #2c5282; transform: translateY(-1px); }
 .v-btn.exam-btn { background: #d97706; }
 .v-btn.exam-btn:hover { background: #b45309; }
+.v-btn.quiz-btn { background: #276749; }
+.v-btn.quiz-btn:hover { background: #22543d; }
 .v-check {
   width: 17px; height: 17px; cursor: pointer;
   accent-color: #38a169; flex-shrink: 0;
@@ -636,18 +639,18 @@ const COURSES = {
         { id:'MX1-1-k3', title:'知識點 2 【範例 11 (3) 補拍】', url:'https://youtu.be/hNPG6E-24Yg', mins:6 },
         { id:'MX1-1-txt', title:'類題文字詳解（共11頁）', url:'assets/answers/MX1-1.html', mins:0 },
         { id:'MX1-1-p', title:'類題影音詳解（共13題）', url:'assets/answers/MX1-1-類題影音.html', mins:0 },
+        { id:'MX1-1-quiz', title:'1-1 週考卷（下載）', url:'assets/quizzes/MX1-1-週考卷.pdf', mins:0, isQuiz:true },
+        { id:'MX1-1-quizans', title:'1-1 週考卷解答影片', url:'https://youtu.be/F72oYlaDrAs', mins:30, isQuiz:true },
         { id:'MX1-1-ex', title:'段考急救包 1-1', url:'https://youtu.be/IPKL8jHsMPs', mins:42, isExam:true },
-        { id:'MX1-1-quiz', title:'1-1 週考卷（下載）', url:'assets/quizzes/MX1-1-週考卷.pdf', mins:0 },
-        { id:'MX1-1-quizans', title:'1-1 週考卷解答影片', url:'https://youtu.be/F72oYlaDrAs', mins:30 },
       ]},
       { id:'MX1-2', title:'第2節：1-2 多項式的加減', videos:[
         { id:'MX1-2-k1', title:'知識點1', url:'https://youtu.be/9QQs-YPbNTw', mins:22 },
         { id:'MX1-2-k2', title:'知識點2', url:'https://youtu.be/DhMJ8FiobtU', mins:46 },
         { id:'MX1-2-txt', title:'類題文字詳解（共10頁）', url:'assets/answers/MX1-2.html', mins:0 },
         { id:'MX1-2-p', title:'類題影音詳解（共13題）', url:'assets/answers/MX1-2-類題影音.html', mins:0 },
+        { id:'MX1-2-quiz', title:'1-2 週考卷（下載）', url:'assets/quizzes/MX1-2-週考卷.pdf', mins:0, isQuiz:true },
+        { id:'MX1-2-quizans', title:'1-2 週考卷解答影片', url:'https://youtu.be/X4-wnzkMcMo', mins:25, isQuiz:true },
         { id:'MX1-2-ex', title:'段考急救包 1-2', url:'https://youtu.be/TEayKS16kmE', mins:29, isExam:true },
-        { id:'MX1-2-quiz', title:'1-2 週考卷（下載）', url:'assets/quizzes/MX1-2-週考卷.pdf', mins:0 },
-        { id:'MX1-2-quizans', title:'1-2 週考卷解答影片', url:'https://youtu.be/X4-wnzkMcMo', mins:25 },
       ]},
       { id:'MX1-3', title:'第3節：1-3 多項式的乘除', videos:[
         { id:'MX1-3-k1', title:'知識點1', url:'https://youtu.be/wgBotoXNuOw', mins:61 },
@@ -656,18 +659,18 @@ const COURSES = {
         { id:'MX1-3-k4', title:'知識點 2 範例6 (2) 補拍', url:'https://youtu.be/TR03HuXaj7I', mins:7 },
         { id:'MX1-3-txt', title:'類題文字詳解（共14頁）', url:'assets/answers/MX1-3.html', mins:0 },
         { id:'MX1-3-p', title:'類題影音詳解（共18題）', url:'assets/answers/MX1-3-類題影音.html', mins:0 },
+        { id:'MX1-3-quiz', title:'1-3 週考卷（下載）', url:'assets/quizzes/MX1-3-週考卷.pdf', mins:0, isQuiz:true },
+        { id:'MX1-3-quizans', title:'1-3 週考卷解答影片', url:'https://youtu.be/i7CHXYueWgg', mins:25, isQuiz:true },
         { id:'MX1-3-ex', title:'段考急救包 1-3', url:'https://youtu.be/iqGzHxBv3aQ', mins:35, isExam:true },
-        { id:'MX1-3-quiz', title:'1-3 週考卷（下載）', url:'assets/quizzes/MX1-3-週考卷.pdf', mins:0 },
-        { id:'MX1-3-quizans', title:'1-3 週考卷解答影片', url:'https://youtu.be/i7CHXYueWgg', mins:25 },
       ]},
       { id:'MX2-1', title:'第4節：2-1 二次方根的意義', videos:[
         { id:'MX2-1-k1', title:'知識點1', url:'https://youtu.be/3ifyPKtfEFE', mins:52 },
         { id:'MX2-1-k2', title:'知識點2', url:'https://youtu.be/fjHooaV_O_E', mins:47 },
         { id:'MX2-1-txt', title:'類題文字詳解（共12頁）', url:'assets/answers/MX2-1.html', mins:0 },
         { id:'MX2-1-p', title:'類題影音詳解（共16題）', url:'assets/answers/MX2-1-類題影音.html', mins:0 },
+        { id:'MX2-1-quiz', title:'2-1 週考卷（下載）', url:'assets/quizzes/MX2-1-週考卷.pdf', mins:0, isQuiz:true },
+        { id:'MX2-1-quizans', title:'2-1 週考卷解答影片', url:'https://youtu.be/l652lCLfr4c', mins:25, isQuiz:true },
         { id:'MX2-1-ex', title:'段考急救包 2-1', url:'https://youtu.be/zkA9S5tlZPw', mins:29, isExam:true },
-        { id:'MX2-1-quiz', title:'2-1 週考卷（下載）', url:'assets/quizzes/MX2-1-週考卷.pdf', mins:0 },
-        { id:'MX2-1-quizans', title:'2-1 週考卷解答影片', url:'https://youtu.be/l652lCLfr4c', mins:25 },
       ]},
       { id:'MX-ERR2', title:'第二次段考 講義勘誤', videos:[
         { id:'MX-ERR2-1', title:'＊講義勘誤', noteText:'2-3\n・類題4(2)需補上單位平方公分', mins:0 },
@@ -677,9 +680,9 @@ const COURSES = {
         { id:'MX2-2-k2', title:'知識點2', url:'https://youtu.be/RxEhYwDsy2A', mins:64 },
         { id:'MX2-2-txt', title:'類題文字詳解（共11頁）', url:'assets/answers/MX2-2.html', mins:0 },
         { id:'MX2-2-p', title:'類題影音詳解（共12題）', url:'assets/answers/MX2-2-類題影音.html', mins:0 },
+        { id:'MX2-2-quiz', title:'2-2 週考卷（下載）', url:'assets/quizzes/MX2-2-週考卷.pdf', mins:0, isQuiz:true },
+        { id:'MX2-2-quizans', title:'2-2 週考卷解答影片', url:'https://youtu.be/ryU2ODlmpi0', mins:32, isQuiz:true },
         { id:'MX2-2-ex', title:'段考急救包 2-2', url:'https://youtu.be/mwygkTdQroI', mins:39, isExam:true },
-        { id:'MX2-2-quiz', title:'2-2 週考卷（下載）', url:'assets/quizzes/MX2-2-週考卷.pdf', mins:0 },
-        { id:'MX2-2-quizans', title:'2-2 週考卷解答影片', url:'https://youtu.be/ryU2ODlmpi0', mins:32 },
       ]},
       { id:'MX2-3', title:'第6節：2-3 畢氏定理', videos:[
         { id:'MX2-3-k1', title:'知識點1', url:'https://youtu.be/C3N4EuSMlRg', mins:50 },
@@ -687,36 +690,36 @@ const COURSES = {
         { id:'MX2-3-k3', title:'知識點2（範例18）補拍', url:'https://youtu.be/M-CznWydOGE', mins:8 },
         { id:'MX2-3-txt', title:'類題文字詳解（共13頁）', url:'assets/answers/MX2-3.html', mins:0 },
         { id:'MX2-3-p', title:'類題影音詳解（共18題）', url:'assets/answers/MX2-3-類題影音.html', mins:0 },
+        { id:'MX2-3-quiz', title:'2-3 週考卷（下載）', url:'assets/quizzes/MX2-3-週考卷.pdf', mins:0, isQuiz:true },
+        { id:'MX2-3-quizans', title:'2-3 週考卷解答影片', url:'https://youtu.be/Rl6_TM1_NtI', mins:27, isQuiz:true },
         { id:'MX2-3-ex', title:'段考急救包 2-3', url:'https://youtu.be/HUMLYk5B4GA', mins:27, isExam:true },
-        { id:'MX2-3-quiz', title:'2-3 週考卷（下載）', url:'assets/quizzes/MX2-3-週考卷.pdf', mins:0 },
-        { id:'MX2-3-quizans', title:'2-3 週考卷解答影片', url:'https://youtu.be/Rl6_TM1_NtI', mins:27 },
       ]},
       { id:'MX3-1', title:'第7節：3-1 提公因式與乗法公式作因式分解', videos:[
         { id:'MX3-1-k1', title:'知識點1', url:'https://youtu.be/qlanMNYt7-0', mins:46 },
         { id:'MX3-1-k2', title:'知識點2', url:'https://youtu.be/mddLPhbZWFw', mins:45 },
         { id:'MX3-1-txt', title:'類題文字詳解（共7頁）', url:'assets/answers/MX3-1.html', mins:0 },
         { id:'MX3-1-p', title:'類題影音詳解（共10題）', url:'assets/answers/MX3-1-類題影音.html', mins:0 },
+        { id:'MX3-1-quiz', title:'3-1 週考卷（下載）', url:'assets/quizzes/MX3-1-週考卷.pdf', mins:0, isQuiz:true },
+        { id:'MX3-1-quizans', title:'3-1 週考卷解答影片', url:'https://youtu.be/AjItLRU6VWo', mins:25, isQuiz:true },
         { id:'MX3-1-ex', title:'段考急救包 3-1', url:'https://youtu.be/bHTFg2ZUl5w', mins:41, isExam:true },
-        { id:'MX3-1-quiz', title:'3-1 週考卷（下載）', url:'assets/quizzes/MX3-1-週考卷.pdf', mins:0 },
-        { id:'MX3-1-quizans', title:'3-1 週考卷解答影片', url:'https://youtu.be/AjItLRU6VWo', mins:25 },
       ]},
       { id:'MX3-2', title:'第8節：3-2 利用十字交乗法因式分解', videos:[
         { id:'MX3-2-k1', title:'知識點1', url:'https://youtu.be/ND1AasNJeb0', mins:44 },
         { id:'MX3-2-k2', title:'知識點2', url:'https://youtu.be/zFi8GAE3SyI', mins:59 },
         { id:'MX3-2-txt', title:'類題文字詳解（共9頁）', url:'assets/answers/MX3-2.html', mins:0 },
         { id:'MX3-2-p', title:'類題影音詳解（共10題）', url:'assets/answers/MX3-2-類題影音.html', mins:0 },
+        { id:'MX3-2-quiz', title:'3-2 週考卷（下載）', url:'assets/quizzes/MX3-2-週考卷.pdf', mins:0, isQuiz:true },
+        { id:'MX3-2-quizans', title:'3-2 週考卷解答影片', url:'https://youtu.be/uar-EyDPKEE', mins:28, isQuiz:true },
         { id:'MX3-2-ex', title:'段考急救包 3-2', url:'https://youtu.be/gEOI9jf-oq0', mins:30, isExam:true },
-        { id:'MX3-2-quiz', title:'3-2 週考卷（下載）', url:'assets/quizzes/MX3-2-週考卷.pdf', mins:0 },
-        { id:'MX3-2-quizans', title:'3-2 週考卷解答影片', url:'https://youtu.be/uar-EyDPKEE', mins:28 },
       ]},
       { id:'MX4-1', title:'第9節：4-1 因式分解法解一元二次方程式', videos:[
         { id:'MX4-1-k1', title:'知識點1', url:'https://youtu.be/BmDmZsv4CfA', mins:65 },
         { id:'MX4-1-k2', title:'知識點2', url:'https://youtu.be/74F92Yv3VG4', mins:47 },
         { id:'MX4-1-txt', title:'類題文字詳解（共11頁）', url:'assets/answers/MX4-1.html', mins:0 },
         { id:'MX4-1-p', title:'類題影音詳解（共14題）', url:'assets/answers/MX4-1-類題影音.html', mins:0 },
+        { id:'MX4-1-quiz', title:'4-1 週考卷（下載）', url:'assets/quizzes/MX4-1-週考卷.pdf', mins:0, isQuiz:true },
+        { id:'MX4-1-quizans', title:'4-1 週考卷解答影片', url:'https://youtu.be/rZMdZ4Og7zE', mins:30, isQuiz:true },
         { id:'MX4-1-ex', title:'段考急救包 4-1', url:'https://youtu.be/kKrngJKoVN4', mins:31, isExam:true },
-        { id:'MX4-1-quiz', title:'4-1 週考卷（下載）', url:'assets/quizzes/MX4-1-週考卷.pdf', mins:0 },
-        { id:'MX4-1-quizans', title:'4-1 週考卷解答影片', url:'https://youtu.be/rZMdZ4Og7zE', mins:30 },
       ]},
       { id:'MX4-2', title:'第10節：4-2 配方法與公式解', videos:[
         { id:'MX4-2-k1', title:'知識點1', url:'https://youtu.be/opZx_8_9l7g', mins:73 },
@@ -724,9 +727,9 @@ const COURSES = {
         { id:'MX4-2-k3', title:'【國二上三段講義題目勘誤】', url:'https://youtu.be/aVo7e46O-Xs', mins:13 },
         { id:'MX4-2-txt', title:'類題文字詳解（共12頁）', url:'assets/answers/MX4-2.html', mins:0 },
         { id:'MX4-2-p', title:'類題影音詳解（共14題）', url:'assets/answers/MX4-2-類題影音.html', mins:0 },
+        { id:'MX4-2-quiz', title:'4-2 週考卷（下載）', url:'assets/quizzes/MX4-2-週考卷.pdf', mins:0, isQuiz:true },
+        { id:'MX4-2-quizans', title:'4-2 週考卷解答影片', url:'https://youtu.be/xxUG5H0v2d8', mins:30, isQuiz:true },
         { id:'MX4-2-ex', title:'段考急救包 4-2', url:'https://youtu.be/D4gAv6Ne9zA', mins:28, isExam:true },
-        { id:'MX4-2-quiz', title:'4-2 週考卷（下載）', url:'assets/quizzes/MX4-2-週考卷.pdf', mins:0 },
-        { id:'MX4-2-quizans', title:'4-2 週考卷解答影片', url:'https://youtu.be/xxUG5H0v2d8', mins:30 },
       ]},
       { id:'MX4-3', title:'第11節：4-3 應用問題', videos:[
         { id:'MX4-3-k1', title:'知識點1', url:'https://youtu.be/BoUsZexS1tU', mins:53 },
@@ -734,18 +737,18 @@ const COURSES = {
         { id:'MX4-3-k3', title:'【國二上三段講義題目勘誤】', url:'https://youtu.be/aVo7e46O-Xs', mins:13 },
         { id:'MX4-3-txt', title:'類題文字詳解（共10頁）', url:'assets/answers/MX4-3.html', mins:0 },
         { id:'MX4-3-p', title:'類題影音詳解（共12題）', url:'assets/answers/MX4-3-類題影音.html', mins:0 },
+        { id:'MX4-3-quiz', title:'4-3 週考卷（下載）', url:'assets/quizzes/MX4-3-週考卷.pdf', mins:0, isQuiz:true },
+        { id:'MX4-3-quizans', title:'4-3 週考卷解答影片', url:'https://youtu.be/cfdbNS9EMJo', mins:39, isQuiz:true },
         { id:'MX4-3-ex', title:'段考急救包 4-3', url:'https://youtu.be/0dtRj4ZxopE', mins:29, isExam:true },
-        { id:'MX4-3-quiz', title:'4-3 週考卷（下載）', url:'assets/quizzes/MX4-3-週考卷.pdf', mins:0 },
-        { id:'MX4-3-quizans', title:'4-3 週考卷解答影片', url:'https://youtu.be/cfdbNS9EMJo', mins:39 },
       ]},
       { id:'MX5-1', title:'第12節：5-1 統計資料處理', videos:[
         { id:'MX5-1-k1', title:'知識點1', url:'https://youtu.be/C2mtKPG1k0w', mins:22 },
         { id:'MX5-1-k2', title:'知識點2', url:'https://youtu.be/_x52sNohvw8', mins:28 },
         { id:'MX5-1-txt', title:'類題文字詳解（共7頁）', url:'assets/answers/MX5-1.html', mins:0 },
         { id:'MX5-1-p', title:'類題影音詳解（共9題）', url:'assets/answers/MX5-1-類題影音.html', mins:0 },
+        { id:'MX5-1-quiz', title:'5-1 週考卷（下載）', url:'assets/quizzes/MX5-1-週考卷.pdf', mins:0, isQuiz:true },
+        { id:'MX5-1-quizans', title:'5-1 週考卷解答影片', url:'https://youtu.be/pX0TMf3H-ng', mins:25, isQuiz:true },
         { id:'MX5-1-ex', title:'段考急救包 5-1', url:'https://youtu.be/88e_fJXAt00', mins:23, isExam:true },
-        { id:'MX5-1-quiz', title:'5-1 週考卷（下載）', url:'assets/quizzes/MX5-1-週考卷.pdf', mins:0 },
-        { id:'MX5-1-quizans', title:'5-1 週考卷解答影片', url:'https://youtu.be/pX0TMf3H-ng', mins:25 },
       ]},
     ]
   },
@@ -1278,16 +1281,17 @@ function buildSemContent(gid, sub, sem, data) {
         const embedUrl  = v.embed === false ? null : toEmbedUrl(v.url);
         const embedKind = embedUrl && embedUrl.startsWith('assets/') ? 'page' : (v.isPdf ? 'pdf' : 'video');
         const isDoc     = embedKind === 'pdf' || embedKind === 'page';
+        const extraBtnClass = v.isExam ? ' exam-btn' : (v.isQuiz ? ' quiz-btn' : '');
         playBtn = embedUrl
-          ? `<button type="button" class="v-btn${v.isExam?' exam-btn':''}" id="vb-${v.id}"
+          ? `<button type="button" class="v-btn${extraBtnClass}" id="vb-${v.id}"
                      onclick="toggleEmbed('${v.id}','${embedUrl}','${escTitle}','${embedKind}')">${isDoc ? '📄 開啟' : '▶ 播放'}</button>`
           : `<a href="${v.url}" target="_blank"
-                class="v-btn${v.isExam?' exam-btn':''}">▶ 觀看</a>`;
+                class="v-btn${extraBtnClass}">▶ 觀看</a>`;
       }
       return `
       <div class="video-row${w[v.id]?' watched':''}" id="vr-${v.id}">
         <span class="v-num">${v.id}</span>
-        <span class="v-title${v.isExam?' exam':''}">
+        <span class="v-title${v.isExam?' exam':(v.isQuiz?' quiz':'')}">
           ${v.isExam ? '📝 ' : ''}${v.title}
         </span>
         <span class="v-dur">${fmtMins(v.mins)}</span>
