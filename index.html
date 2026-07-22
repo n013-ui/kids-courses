@@ -401,6 +401,7 @@ const GRADES = [
   { id:'G8', label:'國二', full:'國中二年級', level:'jh',   subs:['國文','數學','英語','理化','地球科學','歷史','地理','公民'] },
   { id:'G9', label:'國三', full:'國中三年級', level:'jh',   subs:['國文','數學','英語','理化','地球科學','歷史','地理','公民'] },
   { id:'X1', label:'不分年級', full:'不分年級加映課程', level:'extra', subs:['國文'] },
+  { id:'X2', label:'國文先修', full:'國文主題先修課', level:'extra', subs:['國文'] },
 ];
 
 // ════════════════════════════════════════════
@@ -858,6 +859,17 @@ const COURSES = {
     ]
   },
 
+  // ── 不分年級・國文主題先修課（詹芸老師） ────────
+  'X2|國文|上': {
+    title: '國文主題先修課',
+    teacher: '詹芸老師',
+    chapters: [
+      { id:'CW6', title:'第六梯次', videos:[
+        { id:'CW6-1', title:'六-1 標點偵探社', url:'https://drive.google.com/file/d/1Un6v4pL3ORp07qj4t3UP4RZmB8wuseRO/preview', mins:0, embed:true },
+      ]},
+    ]
+  },
+
   // ════════════════════════════════════════════
   //  以下是尚未購買的課程預留欄位
   //  購買後將連結填入對應區塊即可
@@ -1106,7 +1118,7 @@ function setLevel(lv) {
   document.getElementById('tab-jh').classList.toggle('active',    lv === 'jh');
   document.getElementById('tab-extra').classList.toggle('active', lv === 'extra');
   currentGrade = GRADES.find(g => g.level === lv).id;
-  document.getElementById('grade-bar').style.display = lv === 'extra' ? 'none' : '';
+  document.getElementById('grade-bar').style.display = '';
   renderGrades();
   renderSubjects();
 }
@@ -1139,9 +1151,9 @@ function renderSubjects() {
     const upData = courseFor(upKey);
     const dnData = courseFor(dnKey);
 
-    const courseTitle = currentGrade === 'X1' ? (upData || dnData)?.title : null;
+    const courseTitle = grade.level === 'extra' ? (upData || dnData)?.title : null;
 
-    const badges = currentGrade === 'X1'
+    const badges = grade.level === 'extra'
       ? (() => {
           const d   = upData || dnData;
           const cnt = d ? d.chapters.reduce((s,c) => s + c.videos.length, 0) : 0;
@@ -1211,7 +1223,8 @@ function buildSubjectBody(gid, sub) {
     </div>`;
 
   // 不分年級的加映課程：不分學期，直接顯示內容，不出現學期分頁
-  if (gid === 'X1') {
+  const gradeInfo = GRADES.find(g => g.id === gid);
+  if (gradeInfo && gradeInfo.level === 'extra') {
     return buildSemContent(gid, sub, '上', upData || dnData);
   }
 
