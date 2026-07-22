@@ -1118,7 +1118,7 @@ function setLevel(lv) {
   document.getElementById('tab-jh').classList.toggle('active',    lv === 'jh');
   document.getElementById('tab-extra').classList.toggle('active', lv === 'extra');
   currentGrade = GRADES.find(g => g.level === lv).id;
-  document.getElementById('grade-bar').style.display = '';
+  document.getElementById('grade-bar').style.display = lv === 'extra' ? 'none' : '';
   renderGrades();
   renderSubjects();
 }
@@ -1141,19 +1141,29 @@ function renderGrades() {
 
 // ── RENDER SUBJECTS ──────────────────────────
 function renderSubjects() {
-  const grade = GRADES.find(g => g.id === currentGrade);
-  document.getElementById('section-title').textContent = `${grade.full} ・ 考科課程`;
+  const grade       = GRADES.find(g => g.id === currentGrade);
+  const isExtraTabs = currentLevel === 'extra';
 
-  document.getElementById('subject-grid').innerHTML = grade.subs.map(sub => {
+  document.getElementById('section-title').textContent = isExtraTabs
+    ? '加映課程 ・ 延伸學習'
+    : `${grade.full} ・ 考科課程`;
+
+  // 加映課程：把所有不分年級的課程平行列出，不用先選分類
+  const entries = isExtraTabs
+    ? GRADES.filter(g => g.level === 'extra').flatMap(g => g.subs.map(sub => ({ gid: g.id, sub })))
+    : grade.subs.map(sub => ({ gid: currentGrade, sub }));
+
+  document.getElementById('subject-grid').innerHTML = entries.map(({ gid, sub }) => {
     const cfg    = SUB_CFG[sub] || { icon:'📚', c:'#4a5568', bg:'#f7fafc' };
-    const upKey  = `${currentGrade}|${sub}|上`;
-    const dnKey  = `${currentGrade}|${sub}|下`;
+    const upKey  = `${gid}|${sub}|上`;
+    const dnKey  = `${gid}|${sub}|下`;
     const upData = courseFor(upKey);
     const dnData = courseFor(dnKey);
+    const extra  = GRADES.find(g => g.id === gid).level === 'extra';
 
-    const courseTitle = grade.level === 'extra' ? (upData || dnData)?.title : null;
+    const courseTitle = extra ? (upData || dnData)?.title : null;
 
-    const badges = grade.level === 'extra'
+    const badges = extra
       ? (() => {
           const d   = upData || dnData;
           const cnt = d ? d.chapters.reduce((s,c) => s + c.videos.length, 0) : 0;
@@ -1167,12 +1177,12 @@ function renderSubjects() {
           </span>`;
         }).join('');
 
-    const isOpen = openSubject === sub;
+    const isOpen = openSubject === `${gid}|${sub}`;
     return `
       <div class="subject-card" style="border-color:${cfg.c}40"
-           id="sc-${currentGrade}-${sub}">
+           id="sc-${gid}-${sub}">
         <div class="subject-hdr"
-             onclick="toggleSubject('${currentGrade}','${sub}','${cfg.c}')">
+             onclick="toggleSubject('${gid}','${sub}')">
           <div class="subject-icon" style="background:${cfg.bg}">${cfg.icon}</div>
           <div class="subject-info">
             <div class="subject-name" style="color:${cfg.c}">${sub}</div>
@@ -1180,11 +1190,11 @@ function renderSubjects() {
             <div class="subject-badges">${badges}</div>
           </div>
           <span class="subject-arrow${isOpen ? ' open' : ''}"
-                id="sa-${currentGrade}-${sub}">▼</span>
+                id="sa-${gid}-${sub}">▼</span>
         </div>
         <div class="subject-body${isOpen ? ' open' : ''}"
-             id="sb-${currentGrade}-${sub}">
-          ${isOpen ? buildSubjectBody(currentGrade, sub) : ''}
+             id="sb-${gid}-${sub}">
+          ${isOpen ? buildSubjectBody(gid, sub) : ''}
         </div>
       </div>`;
   }).join('');
@@ -1193,15 +1203,16 @@ function renderSubjects() {
 // ── TOGGLE SUBJECT ───────────────────────────
 function toggleSubject(gid, sub) {
   closeTheater();
-  if (openSubject === sub) {
+  const key = `${gid}|${sub}`;
+  if (openSubject === key) {
     openSubject = null; openSem = null;
   } else {
-    openSubject = sub;
+    openSubject = key;
     openSem = courseFor(`${gid}|${sub}|上`) ? '上' : '下';
   }
   const body  = document.getElementById(`sb-${gid}-${sub}`);
   const arrow = document.getElementById(`sa-${gid}-${sub}`);
-  if (openSubject === sub) {
+  if (openSubject === key) {
     body.innerHTML = buildSubjectBody(gid, sub);
     body.classList.add('open');
     arrow.classList.add('open');
