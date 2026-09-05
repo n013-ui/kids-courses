@@ -162,6 +162,7 @@ header h1 { font-size: 18px; font-weight: 800; }
   background: #fff; border-radius: 16px;
   border: 2px solid #e2e8f0; overflow: hidden;
   transition: transform .2s, box-shadow .2s;
+  container-type: inline-size; /* 讓下面的排版依「這張卡片的寬度」而非整個視窗寬度做調整 */
 }
 .subject-card:hover {
   transform: translateY(-2px);
@@ -325,9 +326,13 @@ header h1 { font-size: 18px; font-weight: 800; }
   .v-num { display: none; }
   header h1 { font-size: 15px; }
   .level-tab { padding: 12px 16px; font-size: 14px; }
+}
 
-  /* 標題較長（含課本頁碼標籤）時，改成上下兩排：標題獨占一行，
-     時長／播放／打勾另起一行靠右對齊，避免打勾方塊跟文字擠在一起點不到 */
+/* 標題較長（含課本頁碼標籤）時，改成上下兩排：標題獨占一行，
+   時長／播放／打勾另起一行靠右對齊，避免打勾方塊跟文字擠在一起、甚至被卡片邊界裁掉。
+   用 container query（依卡片本身寬度，而非整個視窗寬度）判斷，因為即使視窗很寬，
+   同一排並排顯示多張科目卡片時，單張卡片一樣會被擠得很窄（例如筆電開視窗、桌機沒放大）。 */
+@container (max-width: 480px) {
   .video-row { flex-wrap: wrap; row-gap: 8px; }
   .v-title   { flex: 1 1 100%; }
   .v-meta    { flex: 1 1 100%; justify-content: flex-end; }
