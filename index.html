@@ -206,6 +206,16 @@ header h1 { font-size: 18px; font-weight: 800; }
 }
 .sem-tab.active { color: #2b6cb0; border-bottom-color: #2b6cb0; background: #fff; }
 
+/* ── TEACHER TABS（同學期有多位老師可切換時顯示） ── */
+.teacher-tabs { display: flex; border-bottom: 1px solid #fde68a; background: #fffbeb; }
+.teacher-tab {
+  padding: 8px 18px; font-size: 12.5px; font-weight: 700;
+  color: #92400e; opacity: .55; border: none; background: none;
+  border-bottom: 3px solid transparent; margin-bottom: -1px;
+  cursor: pointer; font-family: inherit; transition: all .15s;
+}
+.teacher-tab.active { opacity: 1; border-bottom-color: #92400e; background: #fff; }
+
 /* ── BONUS BAR ── */
 .bonus-bar {
   background: linear-gradient(135deg, #fefce8, #fef9c3);
@@ -275,6 +285,12 @@ header h1 { font-size: 18px; font-weight: 800; }
 .v-title { flex: 1; font-size: 13px; line-height: 1.4; }
 .v-title.exam { color: #b45309; font-weight: 700; }
 .v-title.quiz { color: #22543d; font-weight: 700; }
+.v-page {
+  display: inline-block; margin-left: 6px; vertical-align: 1px;
+  font-size: 10px; font-weight: 700; font-family: monospace;
+  color: #92400e; background: #fffbeb; border: 1px solid #fde68a;
+  border-radius: 4px; padding: 1px 6px; white-space: nowrap;
+}
 .v-dur   { font-size: 11px; color: #a0aec0; white-space: nowrap; min-width: 36px; text-align: right; }
 .v-btn {
   padding: 6px 11px; border-radius: 7px;
@@ -588,41 +604,159 @@ const COURSES = {
     ]
   },
 
-  // ── 國二 歷史 上學期（林揚老師） ──────────────
+  // ── 國二 歷史 上學期（林揚老師／宜蓉老師，兩位老師可切換） ──
   'G8|歷史|上': {
-    teacher: '林揚老師',
+    variants: [
+      { id:'linyang', teacher:'林揚老師', chapters: [
+        { id:'H1C1', title:'第一章：中國三代－秦漢', videos:[
+          { id:'H1C1-1', title:'中國三代－秦漢（一）', url:'https://youtu.be/E2q-9AQP5pQ', mins:61 },
+          { id:'H1C1-2', title:'中國三代－秦漢（二）', url:'https://youtu.be/WBFL0DAjU6A', mins:77 },
+          { id:'H1C1-3', title:'秦',                   url:'https://youtu.be/CEFO3zZ8dZI', mins:21 },
+          { id:'H1C1-4', title:'兩漢',                 url:'https://youtu.be/Do2aGexsWIA', mins:31 },
+        ]},
+        { id:'H1C2', title:'第二章：三國、魏晉南北朝、隋唐', videos:[
+          { id:'H1C2-1', title:'三國、魏晉南北朝、隋唐（一）', url:'https://youtu.be/qt4zAxQk3Zk', mins:40 },
+          { id:'H1C2-2', title:'隋唐（一）',                    url:'https://youtu.be/NWcKb7AejCM', mins:23 },
+          { id:'H1C2-3', title:'隋唐（二）',                    url:'https://youtu.be/0-bpnbZ-gMQ', mins:34 },
+        ]},
+        // 段考複習：每次段考範圍固定考兩個章節，複習影片獨立列出，之後有新的段考複習可依此格式增列
+        { id:'H1R12', title:'段考複習（第一、二章）', videos:[
+          { id:'H1R12-ex', title:'商周到隋唐 段考前衝刺版', url:'https://youtu.be/gXeBbu0aqNA', mins:42, isExam:true },
+        ]},
+        { id:'H1C3', title:'第三章：宋元', videos:[
+          { id:'H1C3-1', title:'宋元', url:'https://youtu.be/G9vCzDF51NE', mins:61 },
+        ]},
+        { id:'H1C4', title:'第四章：明朝、清初', videos:[
+          { id:'H1C4-1', title:'明朝、清初', url:'https://youtu.be/oAVDTn-bQ8Q', mins:62 },
+          { id:'H1C4-2', title:'明清（二）：朝貢貿易', url:'https://youtu.be/gIcl2ItHuPA', mins:6  },
+        ]},
+        { id:'H1C5', title:'第五章：清末', videos:[
+          { id:'H1C5-1', title:'清末（一）：鴉片戰爭',           url:'https://youtu.be/335POF4gdfI', mins:21 },
+          { id:'H1C5-2', title:'清末（二）：英法聯軍、自強運動', url:'https://youtu.be/3kz-1zkhkFc', mins:20 },
+          { id:'H1C5-3', title:'清末（三）：甲午戰爭、戊戌變法', url:'https://youtu.be/GTgXuUDA8Mg', mins:22 },
+          { id:'H1C5-4', title:'清末（四）：八國聯軍、庚子後新政', url:'https://youtu.be/bgDHyiE19Fo', mins:10 },
+          { id:'H1C5-5', title:'清末（五）：日俄戰爭、立憲革命', url:'https://youtu.be/VNiJtO3kTjs', mins:17 },
+        ]},
+        { id:'H1C6', title:'第六章：清末社會文化變遷', videos:[
+          { id:'H1C6-1', title:'清末社會文化變遷', url:'https://youtu.be/_o1vuNLLkOc', mins:18 },
+        ]},
+      ]},
+
+      // 宜蓉老師（舊版）：這套影片較細分（單一主題一支影片），章節依南一版課本「中國與東亞（上）」劃分，
+      // 每支影片後方 page 欄位為課本對應頁碼，方便學生邊看邊翻書。
+      { id:'yirong-old', teacher:'宜蓉老師（舊）', bonus: [
+          { label:'YouTube 完整播放清單', url:'https://youtube.com/playlist?list=PL-oHJmlmfN2wQt8Tmjbt6-vtyTU88_WGb' },
+        ], chapters: [
+        { id:'YU1', title:'第一章：商周至隋唐時期的國家與社會', videos:[
+          { id:'YU1-1', title:'從封建到郡縣',       url:'https://youtu.be/cYSyHDqq8a4', mins:22, page:'82–85' },
+          { id:'YU1-2', title:'歷代選拔人才制度',   url:'https://youtu.be/3gzgh3gSVso', mins:15, page:'86–91' },
+        ]},
+        { id:'YU2', title:'第二章：商周至隋唐時期的民族與文化', videos:[
+          { id:'YU2-1', title:'草原民族農業民族&張騫通使西域', url:'https://youtu.be/RDr_dYI0V8E', mins:15, page:'92' },
+          { id:'YU2-2', title:'魏晉南北朝的民族融合',           url:'https://youtu.be/TKAVBxVyo_k', mins:15, page:'93' },
+          { id:'YU2-3', title:'文化交流之佛教',                 url:'https://youtu.be/fb9JHzo6Ed8', mins:13, page:'94' },
+          { id:'YU2-4', title:'中國文化的對外傳播',             url:'https://youtu.be/1v5tUeFtn_0', mins:15, page:'95、98–99' },
+        ]},
+        { id:'YU3', title:'第三章：宋元多民族並立的時期', videos:[
+          { id:'YU3-1', title:'宋遼的互動／澶淵之盟的意義',       url:'https://youtu.be/cQdzYd_RW3w', mins:17, page:'102–103' },
+          { id:'YU3-2', title:'靖康之禍／宋朝的滅亡',             url:'https://youtu.be/y_WROiOMx1c', mins:17, page:'103' },
+          { id:'YU3-3', title:'蒙古帝國的建立與統治',             url:'https://youtu.be/o22z6pJ09-Q', mins:17, page:'104–105' },
+          { id:'YU3-4', title:'宋元時期的貿易與城市生活',         url:'https://youtu.be/0SlNO1v3JfM', mins:16, page:'106–107' },
+          { id:'YU3-5', title:'宋元時期的學術發展與科技成就',     url:'https://youtu.be/DeHj1IPOCis', mins:12, page:'108–113' },
+        ]},
+        { id:'YU4', title:'第四章：明清時期東亞世界的變動', videos:[
+          { id:'YU4-1', title:'明朝的建立與滅亡',       url:'https://youtu.be/2ahN0Edweos', mins:13, page:'114' },
+          { id:'YU4-2', title:'大清帝國的統治',         url:'https://youtu.be/FFobpeMe57Q', mins:12, page:'115' },
+          { id:'YU4-3', title:'天朝體制與朝貢貿易',     url:'https://youtu.be/d1lHjbmWFJA', mins:13, page:'116' },
+          { id:'YU4-4', title:'鄭和下西洋',             url:'https://youtu.be/rDutnd6a0Co', mins:16, page:'116' },
+          { id:'YU4-5', title:'明清時代的貿易活動',     url:'https://youtu.be/08kPOAKcRm0', mins:10, page:'117' },
+          { id:'YU4-6', title:'明清時期的東西文化交流', url:'https://youtu.be/FYLeAbc8bZA', mins:17, page:'118–119' },
+        ]},
+        { id:'YU5', title:'第五章：西力衝擊下的東亞世界', videos:[
+          { id:'YU5-1', title:'中西貿易的限制與衝突',   url:'https://youtu.be/hrzKvnAXPOY', mins:20, page:'126' },
+          { id:'YU5-2', title:'鴉片戰爭與南京條約',     url:'https://youtu.be/z51WD1zjDHw', mins:18, page:'126' },
+          { id:'YU5-3', title:'英法聯軍',               url:'https://youtu.be/THOyPxpeeAw', mins:10, page:'127' },
+          { id:'YU5-4', title:'自強運動',               url:'https://youtu.be/x74YWasufEE', mins:18, page:'128' },
+          { id:'YU5-5', title:'明治維新與甲午戰爭',     url:'https://youtu.be/5DOUzSI-k80', mins:17, page:'129、134' },
+        ]},
+        { id:'YU6', title:'第六章：清末變局與社會文化的變遷', videos:[
+          { id:'YU6-1', title:'戊戌變法',               url:'https://youtu.be/StsOUs0kl00', mins:17, page:'135' },
+          { id:'YU6-2', title:'義和團與八國聯軍',       url:'https://youtu.be/X-gR_6vMxDw', mins:14, page:'136' },
+          { id:'YU6-3', title:'庚子後新政與立憲運動',   url:'https://youtu.be/f6ZVwn24Y3g', mins:11, page:'137' },
+          { id:'YU6-4', title:'晚清社會文化的變遷',     url:'https://youtu.be/Y4BWxSe7mx4', mins:18, page:'138–139' },
+        ]},
+        { id:'YUR1', title:'段考複習', videos:[
+          { id:'YUR1-1', title:'第三次段考重點複習（鴉片戰爭～日俄戰爭）', url:'https://youtu.be/fJWLLEvjyEo', mins:18, isExam:true, page:'126–141' },
+        ]},
+      ]},
+
+      // 宜蓉老師（新版）：115 學年重新錄製的版本，目前只發布第一支，之後老師會依拍攝進度陸續補上，
+      // 到時候只要在下面比照舊版的格式繼續往 chapters 陣列增加即可。
+      { id:'yirong-new', teacher:'宜蓉老師（新）', chapters: [
+        { id:'YN-INFO', title:'📢 課程更新中', videos:[
+          { id:'YN-INFO-1', title:'＊拍攝進度說明',
+            noteText:'宜蓉老師 115 學年新版影片正在錄製中，目前只發布了第一章第 1 支「從封建到郡縣」。其餘章節會依老師拍攝進度陸續更新到這裡，請同學耐心等候！在新版章節補齊之前，也可以切換到「宜蓉老師（舊）」分頁先行預習完整內容。',
+            mins:0 },
+        ]},
+        { id:'YN1', title:'第一章：商周至隋唐時期的國家與社會', videos:[
+          { id:'YN1-1', title:'從封建到郡縣', url:'https://youtu.be/l4IqA8JIrcQ', mins:28, page:'82–85' },
+        ]},
+      ]},
+    ]
+  },
+
+  // ── 國二 歷史 下學期（宜蓉老師（舊）） ──────────
+  // 目前平台尚無其他老師的下學期歷史課程，先以宜蓉老師這套補上這個學期的空缺。
+  // 章節依南一版課本「中國與東亞（下）」劃分，page 欄位為課本對應頁碼。
+  // 宜蓉老師 115 學年新版下學期影片發布後，比照上學期做法改成 variants 結構即可。
+  'G8|歷史|下': {
+    teacher: '宜蓉老師（舊）',
+    bonus: [
+      { label:'YouTube 完整播放清單', url:'https://youtube.com/playlist?list=PL-oHJmlmfN2wQt8Tmjbt6-vtyTU88_WGb' },
+    ],
     chapters: [
-      { id:'H1C1', title:'第一章：中國三代－秦漢', videos:[
-        { id:'H1C1-1', title:'中國三代－秦漢（一）', url:'https://youtu.be/E2q-9AQP5pQ', mins:61 },
-        { id:'H1C1-2', title:'中國三代－秦漢（二）', url:'https://youtu.be/WBFL0DAjU6A', mins:77 },
-        { id:'H1C1-3', title:'秦',                   url:'https://youtu.be/CEFO3zZ8dZI', mins:21 },
-        { id:'H1C1-4', title:'兩漢',                 url:'https://youtu.be/Do2aGexsWIA', mins:31 },
+      { id:'YD1', title:'第一章：中華民國的建立', videos:[
+        { id:'YD1-1', title:'中華民國的建立',           url:'https://youtu.be/8FNBoeRxPow', mins:17, page:'92–93' },
+        { id:'YD1-2', title:'袁世凱登場',               url:'https://youtu.be/-QqZhjUHTQc', mins:12, page:'94' },
+        { id:'YD1-3', title:'二次革命',                 url:'https://youtu.be/XZD7Z0osZJU', mins:11, page:'94' },
+        { id:'YD1-4', title:'二十一條要求與洪憲帝制',   url:'https://youtu.be/WBmOokJbF34', mins:12, page:'95' },
+        { id:'YD1-5', title:'軍閥割據時期',             url:'https://youtu.be/7rdDbSAyCng', mins:16, page:'96–97' },
       ]},
-      { id:'H1C2', title:'第二章：三國、魏晉南北朝、隋唐', videos:[
-        { id:'H1C2-1', title:'三國、魏晉南北朝、隋唐（一）', url:'https://youtu.be/qt4zAxQk3Zk', mins:40 },
-        { id:'H1C2-2', title:'隋唐（一）',                    url:'https://youtu.be/NWcKb7AejCM', mins:23 },
-        { id:'H1C2-3', title:'隋唐（二）',                    url:'https://youtu.be/0-bpnbZ-gMQ', mins:34 },
+      { id:'YD2', title:'第二章：舊傳統與新思潮', videos:[
+        { id:'YD2-1', title:'新文化運動', url:'https://youtu.be/3oI7x-l7o9E', mins:20, page:'102' },
+        { id:'YD2-2', title:'五四運動',   url:'https://youtu.be/sdKtW2JpO-E', mins:14, page:'103' },
       ]},
-      // 段考複習：每次段考範圍固定考兩個章節，複習影片獨立列出，之後有新的段考複習可依此格式增列
-      { id:'H1R12', title:'段考複習（第一、二章）', videos:[
-        { id:'H1R12-ex', title:'商周到隋唐 段考前衝刺版', url:'https://youtu.be/gXeBbu0aqNA', mins:42, isExam:true },
+      { id:'YD3', title:'第三章：現代國家的挑戰', videos:[
+        { id:'YD3-1', title:'聯俄容共─第一次國共合作', url:'https://youtu.be/F2lxEp5QviU', mins:11, page:'112' },
+        { id:'YD3-2', title:'北伐與清黨',               url:'https://youtu.be/BexVLC8u6DI', mins:13, page:'112–113' },
+        { id:'YD3-3', title:'十年建設 aka 訓政時期',    url:'https://youtu.be/lLXug2x4yKw', mins:16, page:'113' },
+        { id:'YD3-4', title:'十年建設期間的內憂外患',   url:'https://youtu.be/rSG0r-REHYQ', mins:16, page:'114' },
+        { id:'YD3-5', title:'日本軍國主義的崛起',       url:'https://youtu.be/8u0yVYDriKA', mins:11, page:'114' },
+        { id:'YD3-6', title:'西安事變',                 url:'https://youtu.be/P6rq7k0_4Rg', mins:17, page:'115' },
       ]},
-      { id:'H1C3', title:'第三章：宋元', videos:[
-        { id:'H1C3-1', title:'宋元', url:'https://youtu.be/G9vCzDF51NE', mins:61 },
+      { id:'YDR1', title:'段考複習（第一次）', videos:[
+        { id:'YDR1-1', title:'第一次段考重點複習（武昌起義～北伐）', url:'https://youtu.be/oimYu10eIcw', mins:20, isExam:true, page:'92–113' },
       ]},
-      { id:'H1C4', title:'第四章：明朝、清初', videos:[
-        { id:'H1C4-1', title:'明朝、清初', url:'https://youtu.be/oAVDTn-bQ8Q', mins:62 },
-        { id:'H1C4-2', title:'明清（二）：朝貢貿易', url:'https://youtu.be/gIcl2ItHuPA', mins:6  },
+      { id:'YD4', title:'第四章：現代國家的變局', videos:[
+        { id:'YD4-1', title:'中日戰爭｜珍珠港事變｜太平洋戰爭｜開羅會議｜雅爾達會議', url:'https://youtu.be/4PB7p8MkHh0', mins:33, page:'120–122' },
+        { id:'YD4-2', title:'國共內戰', url:'https://youtu.be/0NCRXgnQKc0', mins:17, page:'123–125' },
       ]},
-      { id:'H1C5', title:'第五章：清末', videos:[
-        { id:'H1C5-1', title:'清末（一）：鴉片戰爭',           url:'https://youtu.be/335POF4gdfI', mins:21 },
-        { id:'H1C5-2', title:'清末（二）：英法聯軍、自強運動', url:'https://youtu.be/3kz-1zkhkFc', mins:20 },
-        { id:'H1C5-3', title:'清末（三）：甲午戰爭、戊戌變法', url:'https://youtu.be/GTgXuUDA8Mg', mins:22 },
-        { id:'H1C5-4', title:'清末（四）：八國聯軍、庚子後新政', url:'https://youtu.be/bgDHyiE19Fo', mins:10 },
-        { id:'H1C5-5', title:'清末（五）：日俄戰爭、立憲革命', url:'https://youtu.be/VNiJtO3kTjs', mins:17 },
+      { id:'YD5', title:'第五章：共黨政權在中國', videos:[
+        { id:'YD5-1', title:'中共建國初期的發展',       url:'https://youtu.be/EjHpmazl28M', mins:17, page:'130' },
+        { id:'YD5-2', title:'大躍進',                   url:'https://youtu.be/3NhBeTCtChY', mins:20, page:'130' },
+        { id:'YD5-3', title:'文化大革命',               url:'https://youtu.be/k_mFOFeCSUE', mins:19, page:'131' },
+        { id:'YD5-4', title:'中共改革開放後的政經發展', url:'https://youtu.be/q-0mfAR19ro', mins:21, page:'132–133' },
+        { id:'YD5-5', title:'六四天安門事件',           url:'https://youtu.be/0Cy335IHDW8', mins:14, page:'132' },
+        { id:'YD5-6', title:'1990 年代中國的改革',      url:'https://youtu.be/7tce_DQHxRY', mins:20, page:'133' },
       ]},
-      { id:'H1C6', title:'第六章：清末社會文化變遷', videos:[
-        { id:'H1C6-1', title:'清末社會文化變遷', url:'https://youtu.be/_o1vuNLLkOc', mins:18 },
+      { id:'YDR2', title:'段考複習（第二次）', videos:[
+        { id:'YDR2-1', title:'第二次段考重點複習（五四運動～國共內戰）', url:'https://youtu.be/vNTokNbQRcI', mins:21, isExam:true, page:'102–130' },
+      ]},
+      { id:'YD6', title:'第六章：當代東亞的局勢', videos:[
+        { id:'YD6-1', title:'冷戰下的對抗：韓戰',       url:'https://youtu.be/DR_s7u-mDh4', mins:19, page:'139' },
+        { id:'YD6-2', title:'冷戰下的對抗：越戰',       url:'https://youtu.be/ta54d_y8VG8', mins:20, page:'139' },
+        { id:'YD6-3', title:'中美蘇關係的變化',         url:'https://youtu.be/6EXGsVmNNpU', mins:15, page:'140' },
+        { id:'YD6-4', title:'東南亞地區國際組織的發展', url:'https://youtu.be/KaoRnIIeRr8', mins:16, page:'141' },
       ]},
     ]
   },
@@ -899,7 +1033,21 @@ let currentLevel    = 'elem';
 let currentGrade    = 'G1';
 let openSubject     = null;
 let openSem         = null;
+let openVariant     = null;  // 多老師課程（COURSES 中含 variants）目前選中的老師 id
 let allowedPatterns = [];
+
+// 取出一門課的所有章節：一般課程直接回傳 chapters；有多位老師（variants）則合併全部老師的章節
+function allChaptersOf(data) {
+  return data.variants ? data.variants.flatMap(v => v.chapters) : data.chapters;
+}
+// 找出「含有某支影片 id」的那一份章節清單（單一老師課程回傳 chapters；多老師課程回傳該老師的 chapters）
+function findChaptersContaining(data, vid) {
+  if (data.variants) {
+    const v = data.variants.find(v => v.chapters.some(ch => ch.videos.some(vv => vv.id === vid)));
+    return v ? v.chapters : null;
+  }
+  return data.chapters.some(ch => ch.videos.some(vv => vv.id === vid)) ? data.chapters : null;
+}
 
 function watchedKey() { return 'lms_watched_' + currentUser; }
 
@@ -1014,7 +1162,7 @@ function scheduleCloudSave() {
     const grouped = {};
     for (const [courseKey, courseData] of Object.entries(COURSES)) {
       if (!isAllowed(courseKey)) continue;
-      const ids = courseData.chapters
+      const ids = allChaptersOf(courseData)
         .flatMap(c => c.videos)
         .filter(v => w[v.id])
         .map(v => v.id)
@@ -1100,17 +1248,17 @@ function toggleWatched(vid) {
 function updateProgressBar(vid, w) {
   for (const [key, data] of Object.entries(COURSES)) {
     if (!isAllowed(key)) continue;
-    for (const ch of data.chapters) {
-      if (ch.videos.some(v => v.id === vid)) {
-        const all  = data.chapters.flatMap(c => c.videos);
-        const done = all.filter(v => w[v.id]).length;
-        const pct  = Math.round(done / all.length * 100);
-        const fill = document.getElementById('pf-' + key.replace(/\|/g,'-'));
-        const lbl  = document.getElementById('pl-' + key.replace(/\|/g,'-'));
-        if (fill) fill.style.width = pct + '%';
-        if (lbl)  lbl.textContent  = `${done} / ${all.length} 支（${pct}%）`;
-        return;
-      }
+    // 多老師課程（variants）只更新該老師自己的章節與進度條，不會混到另一位老師的支數
+    const chaptersList = findChaptersContaining(data, vid);
+    if (chaptersList) {
+      const all  = chaptersList.flatMap(c => c.videos);
+      const done = all.filter(v => w[v.id]).length;
+      const pct  = Math.round(done / all.length * 100);
+      const fill = document.getElementById('pf-' + key.replace(/\|/g,'-'));
+      const lbl  = document.getElementById('pl-' + key.replace(/\|/g,'-'));
+      if (fill) fill.style.width = pct + '%';
+      if (lbl)  lbl.textContent  = `${done} / ${all.length} 支（${pct}%）`;
+      return;
     }
   }
 }
@@ -1118,7 +1266,7 @@ function updateProgressBar(vid, w) {
 // ── LEVEL / GRADE ────────────────────────────
 function setLevel(lv) {
   closeTheater();
-  currentLevel = lv; openSubject = null; openSem = null;
+  currentLevel = lv; openSubject = null; openSem = null; openVariant = null;
   document.getElementById('tab-elem').classList.toggle('active',  lv === 'elem');
   document.getElementById('tab-jh').classList.toggle('active',    lv === 'jh');
   document.getElementById('tab-extra').classList.toggle('active', lv === 'extra');
@@ -1129,7 +1277,7 @@ function setLevel(lv) {
 }
 function setGrade(gid) {
   closeTheater();
-  currentGrade = gid; openSubject = null; openSem = null;
+  currentGrade = gid; openSubject = null; openSem = null; openVariant = null;
   document.querySelectorAll('.grade-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.gid === gid));
   renderSubjects();
@@ -1171,12 +1319,12 @@ function renderSubjects() {
     const badges = extra
       ? (() => {
           const d   = upData || dnData;
-          const cnt = d ? d.chapters.reduce((s,c) => s + c.videos.length, 0) : 0;
+          const cnt = d ? allChaptersOf(d).reduce((s,c) => s + c.videos.length, 0) : 0;
           return `<span class="sem-badge ${d ? 'has' : 'none'}">${d ? `共 ${cnt} 支` : '尚未加入'}</span>`;
         })()
       : ['上','下'].map(sem => {
           const d   = sem === '上' ? upData : dnData;
-          const cnt = d ? d.chapters.reduce((s,c) => s + c.videos.length, 0) : 0;
+          const cnt = d ? allChaptersOf(d).reduce((s,c) => s + c.videos.length, 0) : 0;
           return `<span class="sem-badge ${d ? 'has' : 'none'}">
             ${sem}學期${d ? ` · ${cnt}支` : ''}
           </span>`;
@@ -1210,10 +1358,11 @@ function toggleSubject(gid, sub) {
   closeTheater();
   const key = `${gid}|${sub}`;
   if (openSubject === key) {
-    openSubject = null; openSem = null;
+    openSubject = null; openSem = null; openVariant = null;
   } else {
     openSubject = key;
     openSem = courseFor(`${gid}|${sub}|上`) ? '上' : '下';
+    openVariant = null;
   }
   const body  = document.getElementById(`sb-${gid}-${sub}`);
   const arrow = document.getElementById(`sa-${gid}-${sub}`);
@@ -1256,13 +1405,39 @@ function buildSubjectBody(gid, sub) {
              onclick="setSem('${gid}','${sub}','${s.key}')">${s.key}學期</button>`
   ).join('');
 
-  return `<div class="sem-tabs">${tabs}</div>${buildSemContent(gid, sub, openSem, curData)}`;
+  // 同一學期有多位老師（variants）時，另外顯示一排「老師選擇」分頁，
+  // 讓學生自行切換要看哪一位老師的教學版本
+  let teacherTabs = '';
+  let semData = curData;
+  if (curData && curData.variants) {
+    if (!openVariant || !curData.variants.find(v => v.id === openVariant)) {
+      openVariant = curData.variants[0].id;
+    }
+    semData = curData.variants.find(v => v.id === openVariant);
+    teacherTabs = `<div class="teacher-tabs">${
+      curData.variants.map(v =>
+        `<button class="teacher-tab${v.id === openVariant ? ' active' : ''}"
+                 onclick="setVariant('${gid}','${sub}','${v.id}')">👨‍🏫 ${v.teacher}</button>`
+      ).join('')
+    }</div>`;
+  }
+
+  return `<div class="sem-tabs">${tabs}</div>${teacherTabs}${buildSemContent(gid, sub, openSem, semData)}`;
 }
 
 // ── SET SEMESTER ─────────────────────────────
 function setSem(gid, sub, sem) {
   closeTheater();
   openSem = sem;
+  openVariant = null;
+  const body = document.getElementById(`sb-${gid}-${sub}`);
+  if (body) body.innerHTML = buildSubjectBody(gid, sub);
+}
+
+// ── SET TEACHER VARIANT ──────────────────────
+function setVariant(gid, sub, vid) {
+  closeTheater();
+  openVariant = vid;
   const body = document.getElementById(`sb-${gid}-${sub}`);
   if (body) body.innerHTML = buildSubjectBody(gid, sub);
 }
@@ -1321,7 +1496,7 @@ function buildSemContent(gid, sub, sem, data) {
       <div class="video-row${w[v.id]?' watched':''}" id="vr-${v.id}">
         <span class="v-num">${v.id}</span>
         <span class="v-title${v.isExam?' exam':(v.isQuiz?' quiz':'')}">
-          ${v.isExam ? '📝 ' : ''}${v.title}
+          ${v.isExam ? '📝 ' : ''}${v.title}${v.page ? `<span class="v-page">課本 p.${v.page}</span>` : ''}
         </span>
         <span class="v-dur">${fmtMins(v.mins)}</span>
         ${playBtn}
